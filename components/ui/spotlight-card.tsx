@@ -1,14 +1,15 @@
 "use client";
 
-import { type MouseEvent, type ReactNode, useRef } from "react";
+import { type CSSProperties, type MouseEvent, type ReactNode, useRef } from "react";
 import { cn } from "@/lib/utils";
 
 type SpotlightCardProps = {
   children: ReactNode;
   className?: string;
+  style?: CSSProperties;
 };
 
-export function SpotlightCard({ children, className }: SpotlightCardProps) {
+export function SpotlightCard({ children, className, style }: SpotlightCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
 
   const handleMove = (event: MouseEvent<HTMLDivElement>) => {
@@ -16,10 +17,10 @@ export function SpotlightCard({ children, className }: SpotlightCardProps) {
     if (!rect || !cardRef.current) {
       return;
     }
-    const x = ((event.clientX - rect.left) / rect.width) * 100;
-    const y = ((event.clientY - rect.top) / rect.height) * 100;
-    cardRef.current.style.setProperty("--mouse-x", `${x}%`);
-    cardRef.current.style.setProperty("--mouse-y", `${y}%`);
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    cardRef.current.style.setProperty("--mouse-x", `${x}px`);
+    cardRef.current.style.setProperty("--mouse-y", `${y}px`);
   };
 
   return (
@@ -27,6 +28,7 @@ export function SpotlightCard({ children, className }: SpotlightCardProps) {
       ref={cardRef}
       onMouseMove={handleMove}
       data-cursor-hover="true"
+      style={style}
       className={cn("glass-panel interactive-card interactive-glow rounded-2xl border border-[var(--card-border)]", className)}
     >
       {children}

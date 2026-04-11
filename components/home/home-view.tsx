@@ -56,7 +56,7 @@ export function HomeView({ projects, technologies }: HomeViewProps) {
   ];
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative -mt-24  min-h-screen">
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 opacity-30">
           {/* <motion.div
@@ -107,17 +107,9 @@ export function HomeView({ projects, technologies }: HomeViewProps) {
 
             <motion.div className="flex gap-6 mt-8" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
               <Link href="/projects" className="relative group inline-block">
-                <motion.div
-                  className="absolute inset-0 rounded-lg blur-lg opacity-40 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                  style={{
-                    background: "linear-gradient(45deg, var(--primary), var(--secondary), var(--primary))",
-                    backgroundSize: "200% 200%",
-                  }}
-                  animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                />
                 <motion.button
-                  className="relative px-8 py-4 rounded-lg font-semibold flex items-center gap-2 transition-all bg-[var(--primary)] text-[var(--primary-foreground)] overflow-hidden border border-transparent hover:border-white/20"
+                  className="relative px-8 py-4 rounded-full font-semibold flex items-center gap-2 transition-all bg-[var(--primary)] text-[var(--primary-foreground)] overflow-hidden border border-transparent hover:border-white/20"
+                  style={{ boxShadow: "none" }}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -138,7 +130,7 @@ export function HomeView({ projects, technologies }: HomeViewProps) {
 
               <Link href="/contact" className="relative group inline-block">
                 <motion.button
-                  className="relative px-8 py-4 rounded-lg font-semibold transition-all border text-[var(--foreground)] overflow-hidden backdrop-blur-md"
+                  className="relative px-8 py-4 rounded-full font-semibold transition-all border text-[var(--foreground)] overflow-hidden backdrop-blur-md"
                   style={{ background: "var(--glass-bg)", borderColor: "var(--card-border)" }}
                   whileHover={{ borderColor: "var(--primary)", color: "var(--primary)" }}
                   whileTap={{ scale: 0.95 }}
@@ -150,7 +142,7 @@ export function HomeView({ projects, technologies }: HomeViewProps) {
                     whileHover={{ scale: 1.5 }}
                     transition={{ duration: 0.4 }}
                   />
-                  <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                  <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
                     <motion.div
                       className="absolute top-0 left-0 h-[1px] w-[50px]"
                       style={{ background: "linear-gradient(90deg, transparent, var(--primary))" }}
@@ -193,18 +185,8 @@ export function HomeView({ projects, technologies }: HomeViewProps) {
       <section id="metrics" className="py-24 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-3 gap-6">
-            <motion.div
-              className="lg:col-span-2 rounded-2xl p-8 relative overflow-hidden group glass-panel interactive-card interactive-glow"
-              style={{ borderColor: "var(--card-border)", boxShadow: "var(--shadow-float)" }}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              <motion.div
-                className="absolute -top-40 -left-40 w-80 h-80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                style={{ background: "radial-gradient(circle, var(--primary) 0%, transparent 70%)", opacity: 0.15 }}
-              />
+            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+              <SpotlightCard className="lg:col-span-2 rounded-2xl p-8">
               <h3 className="mb-8">Core Technologies</h3>
               <div className="relative overflow-hidden flex flex-col gap-4">
                 <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[var(--glass-bg)] to-transparent z-10 pointer-events-none" />
@@ -252,20 +234,11 @@ export function HomeView({ projects, technologies }: HomeViewProps) {
                   ))}
                 </motion.div>
               </div>
+              </SpotlightCard>
             </motion.div>
 
-            <motion.div
-              className="rounded-2xl p-8 relative overflow-hidden group glass-panel interactive-card interactive-glow"
-              style={{ borderColor: "var(--card-border)", boxShadow: "var(--shadow-float)" }}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-            >
-              <motion.div
-                className="absolute -top-40 -left-40 w-80 h-80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                style={{ background: "radial-gradient(circle, var(--secondary) 0%, transparent 70%)", opacity: 0.15 }}
-              />
+            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.1 }}>
+              <SpotlightCard className="rounded-2xl p-8">
               <div className="relative z-10">
                 <div
                   className="w-12 h-12 rounded-lg flex items-center justify-center mb-6 border"
@@ -281,6 +254,7 @@ export function HomeView({ projects, technologies }: HomeViewProps) {
                   Building scalable platforms &amp; managing fleets of mobile applications.
                 </p>
               </div>
+              </SpotlightCard>
             </motion.div>
           </div>
         </div>
@@ -316,17 +290,15 @@ export function HomeView({ projects, technologies }: HomeViewProps) {
               {trustLoop.map((company, index) => {
                 const Icon = company.icon;
                 return (
-                  <motion.div
+                  <SpotlightCard
                     key={`${company.name}-${index}`}
-                    className="flex flex-col items-center justify-center p-8 rounded-2xl glass-panel interactive-card interactive-glow w-[250px] group/card backdrop-blur-md"
-                    style={{ borderColor: "var(--card-border)", boxShadow: "var(--shadow-float)", background: "var(--glass-bg)" }}
-                    whileHover={{ scale: 1.05 }}
+                    className="flex flex-col items-center justify-center p-8 rounded-2xl w-[250px] group/card backdrop-blur-md"
                   >
                     <Icon size={42} color={company.color} className="mb-4 opacity-80 group-hover/card:opacity-100 transition-opacity" />
                     <h4 className="group-hover/card:text-[var(--primary)] transition-colors" style={{ fontSize: "20px", fontWeight: 700 }}>
                       {company.name}
                     </h4>
-                  </motion.div>
+                  </SpotlightCard>
                 );
               })}
             </motion.div>
@@ -345,19 +317,10 @@ export function HomeView({ projects, technologies }: HomeViewProps) {
 
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <motion.div
+              <SpotlightCard
                 key={testimonial.name}
-                className="rounded-2xl p-8 relative overflow-hidden group glass-panel interactive-card interactive-glow"
-                style={{ borderColor: "var(--card-border)", boxShadow: "var(--shadow-float)" }}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.15 }}
+                className="rounded-2xl p-8"
               >
-                <motion.div
-                  className="absolute -top-40 -left-40 w-80 h-80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                  style={{ background: "radial-gradient(circle, var(--primary) 0%, transparent 70%)", opacity: 0.15 }}
-                />
                 <div className="relative">
                   <Quote size={32} className="text-[var(--primary)] opacity-20 mb-4" />
                   <div className="flex gap-1 mb-4">
@@ -375,7 +338,7 @@ export function HomeView({ projects, technologies }: HomeViewProps) {
                     <p style={{ fontSize: "14px", color: "var(--text-secondary)" }}>{testimonial.role}</p>
                   </div>
                 </div>
-              </motion.div>
+              </SpotlightCard>
             ))}
           </div>
         </div>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, ExternalLink, Code2, MonitorPlay, Zap } from "lucide-react";
 import { useRef } from "react";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
 
 type TechItem = { _id?: string; name?: string } | string;
 
@@ -116,18 +117,16 @@ export function ProjectDetailView({ project }: ProjectDetailViewProps) {
               <h3 className="text-2xl font-semibold mb-6 text-[var(--foreground)]">Key Innovations</h3>
               <div className="grid sm:grid-cols-2 gap-6">
                 {projectData.features.map((feature) => (
-                  <motion.div
+                  <SpotlightCard
                     key={feature.title}
-                    className="p-8 rounded-2xl glass-panel border interactive-card interactive-glow group"
-                    style={{ borderColor: "var(--card-border)", boxShadow: "var(--shadow-float)" }}
-                    whileHover={{ scale: 1.02 }}
+                    className="p-8 rounded-2xl group"
                   >
                     <feature.icon size={32} className="text-[var(--primary)] mb-6 opacity-80 group-hover:opacity-100 transition-opacity" />
                     <h4 className="text-lg font-bold mb-2 text-[var(--foreground)]">{feature.title}</h4>
                     <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
                       {feature.desc}
                     </p>
-                  </motion.div>
+                  </SpotlightCard>
                 ))}
               </div>
             </section>
@@ -140,7 +139,7 @@ export function ProjectDetailView({ project }: ProjectDetailViewProps) {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <div className="p-8 rounded-2xl glass-panel border interactive-card interactive-glow" style={{ borderColor: "var(--card-border)", boxShadow: "var(--shadow-float)" }}>
+            <SpotlightCard className="p-8 rounded-2xl">
               <div className="space-y-6">
                 <div>
                   <span className="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Role</span>
@@ -193,7 +192,7 @@ export function ProjectDetailView({ project }: ProjectDetailViewProps) {
                   </a>
                 ) : null}
               </div>
-            </div>
+            </SpotlightCard>
           </motion.div>
         </div>
       </div>

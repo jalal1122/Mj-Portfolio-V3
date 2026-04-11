@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { PieChart, Pie, Cell } from "recharts";
 import { Activity, Code, TrendingUp } from "lucide-react";
 import type { GitHubMetrics } from "@/lib/github";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
 
 type MetricsViewProps = {
   metrics: GitHubMetrics;
@@ -25,29 +26,18 @@ export function MetricsView({ metrics }: MetricsViewProps) {
   const languageData = metrics.languageData;
 
   return (
-    <div className="relative min-h-screen pt-32 pb-24 px-6">
+    <div className="relative -mt-24 -mb-24 min-h-screen pt-32 pb-24 px-6">
       <div className="max-w-7xl mx-auto">
         <motion.div className="mb-24" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-          <h2 className="mb-4 text-[var(--foreground)]">Metrics &amp; Stats</h2>
-          <p className="text-xl" style={{ color: "var(--text-secondary)" }}>
+          <h2 className="mb-4 text-3xl md:text-5xl font-semibold tracking-tight text-[var(--foreground)]">Metrics &amp; Stats</h2>
+          <p className="text-xl sub-heading" style={{ color: "var(--text-secondary)" }}>
             Data-driven insights into development activity and impact for @{metrics.username}.
           </p>
         </motion.div>
 
         <div className="space-y-6">
-          <motion.div
-            className="rounded-2xl p-8 relative overflow-hidden group glass-panel border interactive-card interactive-glow"
-            style={{ borderColor: "var(--card-border)", boxShadow: "var(--shadow-float)" }}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <motion.div
-              className="absolute -top-40 -left-40 w-80 h-80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0"
-              style={{ background: "radial-gradient(circle, var(--secondary) 0%, transparent 70%)", opacity: 0.15 }}
-            />
-
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+            <SpotlightCard className="rounded-2xl p-8">
             <div className="relative z-10">
               <div className="flex items-center gap-3 mb-8">
                 <div
@@ -90,22 +80,12 @@ export function MetricsView({ metrics }: MetricsViewProps) {
                 </div>
               </div>
             </div>
+            </SpotlightCard>
           </motion.div>
 
           <div className="grid lg:grid-cols-2 gap-6">
-            <motion.div
-              className="rounded-2xl p-8 relative overflow-hidden group glass-panel border interactive-card interactive-glow"
-              style={{ borderColor: "var(--card-border)", boxShadow: "var(--shadow-float)" }}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-            >
-              <motion.div
-                className="absolute -top-40 -left-40 w-80 h-80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0"
-                style={{ background: "radial-gradient(circle, var(--primary) 0%, transparent 70%)", opacity: 0.15 }}
-              />
-
+            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.1 }}>
+              <SpotlightCard className="rounded-2xl p-8">
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-8">
                   <div
@@ -144,21 +124,11 @@ export function MetricsView({ metrics }: MetricsViewProps) {
                   </div>
                 </div>
               </div>
+              </SpotlightCard>
             </motion.div>
 
-            <motion.div
-              className="rounded-2xl p-8 relative overflow-hidden group glass-panel border interactive-card interactive-glow"
-              style={{ borderColor: "var(--card-border)", boxShadow: "var(--shadow-float)" }}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <motion.div
-                className="absolute -top-40 -left-40 w-80 h-80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0"
-                style={{ background: "radial-gradient(circle, #D946EF 0%, transparent 70%)", opacity: 0.15 }}
-              />
-
+            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2 }}>
+              <SpotlightCard className="rounded-2xl p-8">
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-8">
                   <div className="w-12 h-12 rounded-lg flex items-center justify-center border" style={{ background: "rgba(217, 70, 239, 0.1)", borderColor: "rgba(217, 70, 239, 0.2)" }}>
@@ -183,6 +153,7 @@ export function MetricsView({ metrics }: MetricsViewProps) {
                   </motion.div>
                 </div>
               </div>
+              </SpotlightCard>
             </motion.div>
           </div>
         </div>

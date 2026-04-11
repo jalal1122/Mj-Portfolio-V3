@@ -138,20 +138,35 @@ export function AdminDashboard() {
 
   return (
     <div className="section-wrap space-y-6">
-      <SpotlightCard className="rounded-2xl p-5">
-        <p className="text-sm text-[var(--muted)]">Admin mutation token (required only when ADMIN_TOKEN is configured on server)</p>
+      <div className="grid md:grid-cols-3 gap-4">
+        <SpotlightCard className="p-4">
+          <p className="text-xs uppercase tracking-[0.14em] text-[var(--text-secondary)]">Projects</p>
+          <p className="mt-2 text-3xl font-semibold">{projects.length}</p>
+        </SpotlightCard>
+        <SpotlightCard className="p-4">
+          <p className="text-xs uppercase tracking-[0.14em] text-[var(--text-secondary)]">Technologies</p>
+          <p className="mt-2 text-3xl font-semibold">{technologies.length}</p>
+        </SpotlightCard>
+        <SpotlightCard className="p-4">
+          <p className="text-xs uppercase tracking-[0.14em] text-[var(--text-secondary)]">Experiences</p>
+          <p className="mt-2 text-3xl font-semibold">{experiences.length}</p>
+        </SpotlightCard>
+      </div>
+
+      <SpotlightCard className="p-5">
+        <p className="text-sm text-[var(--text-secondary)]">Admin mutation token (required only when `ADMIN_TOKEN` is enabled)</p>
         <input
           value={adminToken}
           onChange={(event) => setAdminToken(event.target.value)}
           placeholder="Paste admin token"
           className="mt-2 w-full rounded-xl border border-[var(--card-border)] bg-transparent px-4 py-2"
         />
-        {status ? <p className="text-sm text-[var(--muted)] mt-2">{status}</p> : null}
+        {status ? <p className="text-sm text-[var(--text-secondary)] mt-2">{status}</p> : null}
       </SpotlightCard>
 
       <div className="grid gap-6 xl:grid-cols-3">
-        <SpotlightCard className="rounded-2xl p-5 space-y-3">
-          <h2 className="font-semibold">Projects</h2>
+        <SpotlightCard className="p-5 space-y-3">
+          <h2 className="font-semibold text-lg">Projects Manager</h2>
           <input className="w-full rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2" placeholder="Title" value={projectForm.title} onChange={(event) => setProjectForm((state) => ({ ...state, title: event.target.value }))} />
           <textarea className="w-full rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2" placeholder="Description" value={projectForm.description} onChange={(event) => setProjectForm((state) => ({ ...state, description: event.target.value }))} />
           <input className="w-full rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2" placeholder="Slug" value={projectForm.slug} onChange={(event) => setProjectForm((state) => ({ ...state, slug: event.target.value }))} />
@@ -179,21 +194,36 @@ export function AdminDashboard() {
           <input className="w-full rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2" placeholder="Tech IDs (comma-separated)" value={projectForm.techStack} onChange={(event) => setProjectForm((state) => ({ ...state, techStack: event.target.value }))} />
           <input className="w-full rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2" placeholder="Github link" value={projectForm.githubLink} onChange={(event) => setProjectForm((state) => ({ ...state, githubLink: event.target.value }))} />
           <input className="w-full rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2" placeholder="Live link" value={projectForm.liveLink} onChange={(event) => setProjectForm((state) => ({ ...state, liveLink: event.target.value }))} />
-          <button
-            onClick={() =>
-              createProject()
-                .then(() => setStatus(editingProjectId ? "Project updated." : "Project created."))
-                .catch(() => setStatus("Unable to save project."))
-            }
-            className="inline-flex items-center gap-2 rounded-full bg-[var(--primary)] text-white px-4 py-2 text-sm"
-          >
-            <Plus className="h-4 w-4" />
-            {editingProjectId ? "Update Project" : "Add Project"}
-          </button>
-          <div className="space-y-2">
+
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() =>
+                createProject()
+                  .then(() => setStatus(editingProjectId ? "Project updated." : "Project created."))
+                  .catch(() => setStatus("Unable to save project."))
+              }
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--primary)] text-white px-4 py-2 text-sm"
+            >
+              <Plus className="h-4 w-4" />
+              {editingProjectId ? "Update Project" : "Add Project"}
+            </button>
+            {editingProjectId ? (
+              <button
+                onClick={() => {
+                  setEditingProjectId("");
+                  setProjectForm(defaultProject);
+                }}
+                className="rounded-full border border-[var(--card-border)] px-4 py-2 text-sm"
+              >
+                Cancel Edit
+              </button>
+            ) : null}
+          </div>
+
+          <div className="space-y-2 max-h-[320px] overflow-auto pr-1">
             {projects.map((project) => (
               <div key={project._id} className="flex items-center justify-between rounded-lg border border-[var(--card-border)] px-3 py-2">
-                <span className="text-sm truncate">{project.title}</span>
+                <span className="text-sm truncate max-w-[180px]">{project.title}</span>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => {
@@ -221,8 +251,8 @@ export function AdminDashboard() {
           </div>
         </SpotlightCard>
 
-        <SpotlightCard className="rounded-2xl p-5 space-y-3">
-          <h2 className="font-semibold">Technologies</h2>
+        <SpotlightCard className="p-5 space-y-3">
+          <h2 className="font-semibold text-lg">Technologies Manager</h2>
           <input className="w-full rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2" placeholder="Name" value={technologyForm.name} onChange={(event) => setTechnologyForm((state) => ({ ...state, name: event.target.value }))} />
           <input className="w-full rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2" placeholder="Category" value={technologyForm.category} onChange={(event) => setTechnologyForm((state) => ({ ...state, category: event.target.value }))} />
           <div className="flex gap-2">
@@ -246,21 +276,39 @@ export function AdminDashboard() {
               )}
             </CldUploadWidget>
           </div>
-          <button
-            onClick={() =>
-              createTechnology()
-                .then(() => setStatus(editingTechnologyId ? "Technology updated." : "Technology created."))
-                .catch(() => setStatus("Unable to save technology."))
-            }
-            className="inline-flex items-center gap-2 rounded-full bg-[var(--primary)] text-white px-4 py-2 text-sm"
-          >
-            <Plus className="h-4 w-4" />
-            {editingTechnologyId ? "Update Technology" : "Add Technology"}
-          </button>
-          <div className="space-y-2">
+
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() =>
+                createTechnology()
+                  .then(() => setStatus(editingTechnologyId ? "Technology updated." : "Technology created."))
+                  .catch(() => setStatus("Unable to save technology."))
+              }
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--primary)] text-white px-4 py-2 text-sm"
+            >
+              <Plus className="h-4 w-4" />
+              {editingTechnologyId ? "Update Technology" : "Add Technology"}
+            </button>
+            {editingTechnologyId ? (
+              <button
+                onClick={() => {
+                  setEditingTechnologyId("");
+                  setTechnologyForm(defaultTechnology);
+                }}
+                className="rounded-full border border-[var(--card-border)] px-4 py-2 text-sm"
+              >
+                Cancel Edit
+              </button>
+            ) : null}
+          </div>
+
+          <div className="space-y-2 max-h-[320px] overflow-auto pr-1">
             {technologies.map((technology) => (
               <div key={technology._id} className="flex items-center justify-between rounded-lg border border-[var(--card-border)] px-3 py-2">
-                <span className="text-sm truncate">{technology.name}</span>
+                <div>
+                  <p className="text-sm">{technology.name}</p>
+                  <p className="text-xs text-[var(--text-secondary)]">{technology.category}</p>
+                </div>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => {
@@ -284,27 +332,45 @@ export function AdminDashboard() {
           </div>
         </SpotlightCard>
 
-        <SpotlightCard className="rounded-2xl p-5 space-y-3">
-          <h2 className="font-semibold">Experiences</h2>
+        <SpotlightCard className="p-5 space-y-3">
+          <h2 className="font-semibold text-lg">Experiences Manager</h2>
           <input className="w-full rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2" placeholder="Role" value={experienceForm.role} onChange={(event) => setExperienceForm((state) => ({ ...state, role: event.target.value }))} />
           <input className="w-full rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2" placeholder="Company" value={experienceForm.company} onChange={(event) => setExperienceForm((state) => ({ ...state, company: event.target.value }))} />
           <input className="w-full rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2" placeholder="Timeframe" value={experienceForm.timeframe} onChange={(event) => setExperienceForm((state) => ({ ...state, timeframe: event.target.value }))} />
           <textarea className="w-full rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2" placeholder="Description" value={experienceForm.description} onChange={(event) => setExperienceForm((state) => ({ ...state, description: event.target.value }))} />
-          <button
-            onClick={() =>
-              createExperience()
-                .then(() => setStatus(editingExperienceId ? "Experience updated." : "Experience created."))
-                .catch(() => setStatus("Unable to save experience."))
-            }
-            className="inline-flex items-center gap-2 rounded-full bg-[var(--primary)] text-white px-4 py-2 text-sm"
-          >
-            <Plus className="h-4 w-4" />
-            {editingExperienceId ? "Update Experience" : "Add Experience"}
-          </button>
-          <div className="space-y-2">
+
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() =>
+                createExperience()
+                  .then(() => setStatus(editingExperienceId ? "Experience updated." : "Experience created."))
+                  .catch(() => setStatus("Unable to save experience."))
+              }
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--primary)] text-white px-4 py-2 text-sm"
+            >
+              <Plus className="h-4 w-4" />
+              {editingExperienceId ? "Update Experience" : "Add Experience"}
+            </button>
+            {editingExperienceId ? (
+              <button
+                onClick={() => {
+                  setEditingExperienceId("");
+                  setExperienceForm(defaultExperience);
+                }}
+                className="rounded-full border border-[var(--card-border)] px-4 py-2 text-sm"
+              >
+                Cancel Edit
+              </button>
+            ) : null}
+          </div>
+
+          <div className="space-y-2 max-h-[320px] overflow-auto pr-1">
             {experiences.map((experience) => (
               <div key={experience._id} className="flex items-center justify-between rounded-lg border border-[var(--card-border)] px-3 py-2">
-                <span className="text-sm truncate">{experience.role}</span>
+                <div>
+                  <p className="text-sm">{experience.role}</p>
+                  <p className="text-xs text-[var(--text-secondary)]">{experience.company}</p>
+                </div>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => {

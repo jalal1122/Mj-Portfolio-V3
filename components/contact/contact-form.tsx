@@ -3,6 +3,7 @@
 import { type FormEvent, useState } from "react";
 import { motion } from "framer-motion";
 import { Send, Mail, Globe2, Code2 } from "lucide-react";
+import { SpotlightCard } from "../ui/spotlight-card";
 
 export function ContactForm() {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -13,7 +14,7 @@ export function ContactForm() {
   const socialLinks = [
     { icon: Code2, label: "GitHub", href: "https://github.com" },
     { icon: Globe2, label: "LinkedIn", href: "https://linkedin.com" },
-    { icon: Mail, label: "Twitter", href: "https://x.com" },
+    { icon: Mail, label: "Instagram", href: "https://x.com" },
   ];
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -41,17 +42,18 @@ export function ContactForm() {
   };
 
   return (
-    <div className="max-w-2xl w-full mx-auto">
+    <div className="max-w-2xl -mt-24 -mb-24 w-full mx-auto">
       <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-        <h2 className="mb-4 text-[var(--foreground)]">Let's Connect</h2>
-        <p className="text-xl" style={{ color: "var(--text-secondary)" }}>
+        <h2 className="mb-4 text-3xl md:text-5xl font-semibold tracking-tight text-[var(--foreground)]">Let's Connect</h2>
+        <p className="text-xl sub-heading" style={{ color: "var(--text-secondary)" }}>
           Have a project in mind or want to collaborate? Drop me a message.
         </p>
       </motion.div>
 
+      <SpotlightCard className="rounded-2xl p-12">
       <motion.div
-        className="rounded-2xl p-12 relative overflow-hidden border interactive-card interactive-glow"
-        style={{ background: "var(--glass-bg)", borderColor: "var(--card-border)", boxShadow: "var(--shadow-float)", backdropFilter: "blur(12px)" }}
+        className="relative"
+        style={{ backdropFilter: "blur(12px)" }}
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
@@ -62,7 +64,6 @@ export function ContactForm() {
           animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.3, 0.2] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         />
-
         <form onSubmit={onSubmit} className="relative z-10 space-y-6">
           <div>
             <label htmlFor="name" className="block mb-2">
@@ -163,6 +164,7 @@ export function ContactForm() {
           {status === "error" ? <p className="text-sm text-red-400">Failed to send. Please try again.</p> : null}
         </form>
       </motion.div>
+      </SpotlightCard>
 
       <motion.div
         className="mt-12 flex justify-center gap-6"
