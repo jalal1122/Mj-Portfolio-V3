@@ -1,26 +1,131 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f5f4ee;
+  --foreground: #0d1830;
+  --primary: #4f83ff;
+  --primary-foreground: #f5f8ff;
+  --secondary: #8f77ff;
+  --secondary-foreground: #f5f8ff;
+  --muted: #8a93a6;
+  --text-secondary: #6f7790;
+  --glass-bg: rgba(255, 255, 255, 0.62);
+  --glass-border: rgba(79, 131, 255, 0.22);
+  --card-border: rgba(28, 36, 53, 0.2);
+  --shadow-float: 0 20px 60px rgba(15, 26, 52, 0.15);
+  --shadow-glow: 0 0 100px rgba(79, 131, 255, 0.36);
+  --grid-line: rgba(79, 131, 255, 0.08);
+}
+
+.dark {
+  --background: #060c1d;
+  --foreground: #edf1ff;
+  --primary: #7aa3ff;
+  --primary-foreground: #f2f5ff;
+  --secondary: #b8a1ff;
+  --secondary-foreground: #f3efff;
+  --muted: #8e96b3;
+  --text-secondary: #98a2c4;
+  --glass-bg: rgba(9, 20, 46, 0.56);
+  --glass-border: rgba(122, 163, 255, 0.2);
+  --card-border: rgba(143, 119, 255, 0.22);
+  --shadow-float: 0 24px 70px rgba(0, 0, 0, 0.48);
+  --shadow-glow: 0 0 120px rgba(79, 131, 255, 0.28);
+  --grid-line: rgba(122, 163, 255, 0.09);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-plus-jakarta);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  min-height: 100%;
 }
 
 body {
-  background: var(--background);
+  /* background:
+    radial-gradient(circle at 15% 20%, rgba(79, 131, 255, 0.16), transparent 30%),
+    radial-gradient(circle at 85% 10%, rgba(143, 119, 255, 0.14), transparent 34%),
+    var(--background); */
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-plus-jakarta), sans-serif;
+  cursor: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+a,
+input,
+textarea,
+select,
+[role="button"] {
+  cursor: none;
+}
+
+.tech-grid-bg {
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.glass-panel {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-float);
+  backdrop-filter: blur(16px);
+}
+
+.interactive-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.interactive-glow::before {
+  content: "";
+  position: absolute;
+  inset: -80px;
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(122, 163, 255, 0.25), transparent 38%);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.interactive-glow:hover::before {
+  opacity: 1;
+}
+
+.sub-heading {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.section-wrap {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+@media (pointer: coarse) {
+  body,
+  button,
+  a,
+  input,
+  textarea,
+  select,
+  [role="button"] {
+    cursor: auto;
+  }
 }
