@@ -2,7 +2,8 @@
 
 import { type FormEvent, useState } from "react";
 import { motion } from "framer-motion";
-import { Send, Mail, Globe2, Code2 } from "lucide-react";
+import { Send, Mail, Clock3, MapPin } from "lucide-react";
+import { FaGithub, FaInstagram, FaLinkedinIn } from "react-icons/fa6";
 import { SpotlightCard } from "../ui/spotlight-card";
 
 export function ContactForm() {
@@ -12,9 +13,9 @@ export function ContactForm() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const socialLinks = [
-    { icon: Code2, label: "GitHub", href: "https://github.com" },
-    { icon: Globe2, label: "LinkedIn", href: "https://linkedin.com" },
-    { icon: Mail, label: "Instagram", href: "https://x.com" },
+    { icon: FaLinkedinIn, label: "LinkedIn", href: "https://linkedin.com/in/" },
+    { icon: FaGithub, label: "GitHub", href: "https://github.com/" },
+    { icon: FaInstagram, label: "Instagram", href: "https://instagram.com/" },
   ];
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -42,13 +43,43 @@ export function ContactForm() {
   };
 
   return (
-    <div className="max-w-2xl -mt-24 -mb-24 w-full mx-auto">
+    <div className="max-w-2xl w-full mx-auto">
       <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
         <h2 className="mb-4 text-3xl md:text-5xl font-semibold tracking-tight text-[var(--foreground)]">Let's Connect</h2>
         <p className="text-xl sub-heading" style={{ color: "var(--text-secondary)" }}>
           Have a project in mind or want to collaborate? Drop me a message.
         </p>
       </motion.div>
+
+      <div className="grid md:grid-cols-3 gap-4 mb-8">
+        <SpotlightCard className="rounded-xl p-4">
+          <div className="flex items-center gap-3">
+            <Clock3 size={18} style={{ color: "var(--primary)" }} />
+            <div>
+              <p className="text-sm font-medium text-[var(--foreground)]">Response Window</p>
+              <p className="text-xs text-[var(--text-secondary)]">Typically within 24 hours</p>
+            </div>
+          </div>
+        </SpotlightCard>
+        <SpotlightCard className="rounded-xl p-4">
+          <div className="flex items-center gap-3">
+            <MapPin size={18} style={{ color: "var(--secondary)" }} />
+            <div>
+              <p className="text-sm font-medium text-[var(--foreground)]">Based In</p>
+              <p className="text-xs text-[var(--text-secondary)]">Peshawar, Pakistan</p>
+            </div>
+          </div>
+        </SpotlightCard>
+        <SpotlightCard className="rounded-xl p-4">
+          <div className="flex items-center gap-3">
+            <Mail size={18} style={{ color: "var(--primary)" }} />
+            <div>
+              <p className="text-sm font-medium text-[var(--foreground)]">Best For</p>
+              <p className="text-xs text-[var(--text-secondary)]">Full-stack builds and AI integrations</p>
+            </div>
+          </div>
+        </SpotlightCard>
+      </div>
 
       <SpotlightCard className="rounded-2xl p-12">
       <motion.div

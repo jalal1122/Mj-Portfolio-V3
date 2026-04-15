@@ -36,16 +36,30 @@ const defaultTechnology = {
   cloudinarySvgUrl: "",
 };
 
+const defaultHomeContent = {
+  heroImageUrl: "/jkimage.png",
+  trustedCompanies: [{ name: "", color: "" }],
+  testimonials: [{ text: "", name: "", role: "" }],
+};
+
 async function fetchEntity(route: string) {
   const response = await fetch(`/api/${route}`, { cache: "no-store" });
   const payload = await response.json();
   return payload.data ?? [];
 }
 
+async function fetchHomeContentEntity() {
+  const response = await fetch("/api/home-content", { cache: "no-store" });
+  const payload = await response.json();
+  return payload.data ?? null;
+}
+
 export function AdminDashboard() {
   const [projects, setProjects] = useState<Entity[]>([]);
   const [technologies, setTechnologies] = useState<Entity[]>([]);
   const [experiences, setExperiences] = useState<Entity[]>([]);
+  const [homeContent, setHomeContent] = useState<Entity | null>(null);
+  const [homeContentForm, setHomeContentForm] = useState(defaultHomeContent);
   const [projectForm, setProjectForm] = useState(defaultProject);
   const [experienceForm, setExperienceForm] = useState(defaultExperience);
   const [technologyForm, setTechnologyForm] = useState(defaultTechnology);
@@ -54,6 +68,7 @@ export function AdminDashboard() {
   const [editingProjectId, setEditingProjectId] = useState("");
   const [editingTechnologyId, setEditingTechnologyId] = useState("");
   const [editingExperienceId, setEditingExperienceId] = useState("");
+  const [editingHomeContentId, setEditingHomeContentId] = useState("");
 
   const getHeaders = () => {
     const baseHeaders: Record<string, string> = { "Content-Type": "application/json" };
@@ -64,10 +79,24 @@ export function AdminDashboard() {
   };
 
   const refresh = async () => {
-    const [proj, tech, exp] = await Promise.all([fetchEntity("projects"), fetchEntity("technologies"), fetchEntity("experiences")]);
+    const [proj, tech, exp, home] = await Promise.all([
+      fetchEntity("projects"),
+      fetchEntity("technologies"),
+      fetchEntity("experiences"),
+      fetchHomeContentEntity(),
+    ]);
     setProjects(proj);
     setTechnologies(tech);
     setExperiences(exp);
+    setHomeContent(home);
+    if (home?._id) {
+      setEditingHomeContentId(home._id);
+      setHomeContentForm({
+        heroImageUrl: home.heroImageUrl || "/jkimage.png",
+        trustedCompanies: home.trustedCompanies?.length ? home.trustedCompanies : [{ name: "", color: "" }],
+        testimonials: home.testimonials?.length ? home.testimonials : [{ text: "", name: "", role: "" }],
+      });
+    }
   };
 
   useEffect(() => {
@@ -136,6 +165,20 @@ export function AdminDashboard() {
     await refresh();
   };
 
+  const saveHomeContent = async () => {
+    const payload = {
+      heroImageUrl: homeContentForm.heroImageUrl.trim() || "/jkimage.png",
+      trustedCompanies: homeContentForm.trustedCompanies.filter((item) => item.name.trim()),
+      testimonials: homeContentForm.testimonials.filter((item) => item.text.trim() && item.name.trim() && item.role.trim()),
+    };
+    if (editingHomeContentId) {
+      await patchEntity("home-content", editingHomeContentId, payload);
+    } else {
+      await createEntity("home-content", payload);
+    }
+    await refresh();
+  };
+
   return (
     <div className="section-wrap space-y-6">
       <div className="grid md:grid-cols-3 gap-4">
@@ -152,6 +195,167 @@ export function AdminDashboard() {
           <p className="mt-2 text-3xl font-semibold">{experiences.length}</p>
         </SpotlightCard>
       </div>
+
+      <SpotlightCard className="p-5 space-y-4">
+        <h2 className="font-semibold text-lg">Homepage Content Manager</h2>
+        <p className="text-sm text-[var(--text-secondary)]">Manage hero image, trusted cards, and reviews shown on the homepage.</p>
+        <div className="space-y-2">
+          <label className="text-sm">Hero Image URL</label>
+          <div className="flex gap-2">
+            <input
+              className="w-full rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2"
+              value={homeContentForm.heroImageUrl}
+              onChange={(event) => setHomeContentForm((state) => ({ ...state, heroImageUrl: event.target.value }))}
+            />
+            <CldUploadWidget
+              uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+              onSuccess={(result) => {
+                const secureUrl = (result as CloudinaryResult).info?.secure_url ?? "";
+                setHomeContentForm((state) => ({ ...state, heroImageUrl: secureUrl }));
+              }}
+            >
+              {({ open }) => (
+                <button type="button" onClick={() => open()} className="rounded-xl border border-[var(--card-border)] px-3">
+                  <Upload className="h-4 w-4" />
+                </button>
+              )}
+            </CldUploadWidget>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <p className="text-sm font-medium">Trusted By The Best</p>
+          {homeContentForm.trustedCompanies.map((company, index) => (
+            <div key={`company-${index}`} className="grid md:grid-cols-[1fr_180px_auto] gap-2">
+              <input
+                className="rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2"
+                placeholder="Company name"
+                value={company.name}
+                onChange={(event) =>
+                  setHomeContentForm((state) => ({
+                    ...state,
+                    trustedCompanies: state.trustedCompanies.map((item, itemIndex) => (itemIndex === index ? { ...item, name: event.target.value } : item)),
+                  }))
+                }
+              />
+              <input
+                className="rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2"
+                placeholder="Accent color (optional)"
+                value={company.color}
+                onChange={(event) =>
+                  setHomeContentForm((state) => ({
+                    ...state,
+                    trustedCompanies: state.trustedCompanies.map((item, itemIndex) => (itemIndex === index ? { ...item, color: event.target.value } : item)),
+                  }))
+                }
+              />
+              <button
+                type="button"
+                onClick={() =>
+                  setHomeContentForm((state) => ({
+                    ...state,
+                    trustedCompanies: state.trustedCompanies.length > 1 ? state.trustedCompanies.filter((_, itemIndex) => itemIndex !== index) : state.trustedCompanies,
+                  }))
+                }
+                className="rounded-xl border border-[var(--card-border)] px-3"
+              >
+                <Trash2 className="h-4 w-4 text-red-400" />
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() =>
+              setHomeContentForm((state) => ({
+                ...state,
+                trustedCompanies: [...state.trustedCompanies, { name: "", color: "" }],
+              }))
+            }
+            className="rounded-full border border-[var(--card-border)] px-4 py-2 text-sm"
+          >
+            Add Company
+          </button>
+        </div>
+
+        <div className="space-y-3">
+          <p className="text-sm font-medium">Reviews</p>
+          {homeContentForm.testimonials.map((testimonial, index) => (
+            <div key={`testimonial-${index}`} className="space-y-2 rounded-xl border border-[var(--card-border)] p-3">
+              <textarea
+                className="w-full rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2"
+                placeholder="Review text"
+                value={testimonial.text}
+                onChange={(event) =>
+                  setHomeContentForm((state) => ({
+                    ...state,
+                    testimonials: state.testimonials.map((item, itemIndex) => (itemIndex === index ? { ...item, text: event.target.value } : item)),
+                  }))
+                }
+              />
+              <div className="grid md:grid-cols-2 gap-2">
+                <input
+                  className="rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2"
+                  placeholder="Reviewer name"
+                  value={testimonial.name}
+                  onChange={(event) =>
+                    setHomeContentForm((state) => ({
+                      ...state,
+                      testimonials: state.testimonials.map((item, itemIndex) => (itemIndex === index ? { ...item, name: event.target.value } : item)),
+                    }))
+                  }
+                />
+                <input
+                  className="rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2"
+                  placeholder="Reviewer role"
+                  value={testimonial.role}
+                  onChange={(event) =>
+                    setHomeContentForm((state) => ({
+                      ...state,
+                      testimonials: state.testimonials.map((item, itemIndex) => (itemIndex === index ? { ...item, role: event.target.value } : item)),
+                    }))
+                  }
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  setHomeContentForm((state) => ({
+                    ...state,
+                    testimonials: state.testimonials.length > 1 ? state.testimonials.filter((_, itemIndex) => itemIndex !== index) : state.testimonials,
+                  }))
+                }
+                className="rounded-full border border-[var(--card-border)] px-4 py-1.5 text-xs"
+              >
+                Remove Review
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() =>
+              setHomeContentForm((state) => ({
+                ...state,
+                testimonials: [...state.testimonials, { text: "", name: "", role: "" }],
+              }))
+            }
+            className="rounded-full border border-[var(--card-border)] px-4 py-2 text-sm"
+          >
+            Add Review
+          </button>
+        </div>
+
+        <button
+          onClick={() =>
+            saveHomeContent()
+              .then(() => setStatus(homeContent?._id ? "Homepage content updated." : "Homepage content created."))
+              .catch(() => setStatus("Unable to save homepage content."))
+          }
+          className="inline-flex items-center gap-2 rounded-full bg-[var(--primary)] text-white px-4 py-2 text-sm"
+        >
+          <Plus className="h-4 w-4" />
+          Save Homepage Content
+        </button>
+      </SpotlightCard>
 
       <SpotlightCard className="p-5">
         <p className="text-sm text-[var(--text-secondary)]">Admin mutation token (required only when `ADMIN_TOKEN` is enabled)</p>

@@ -1,5 +1,6 @@
 import dbConnect from "@/lib/dbConnect";
 import Experience from "@/models/Experience";
+import HomeContent from "@/models/HomeContent";
 import Project from "@/models/Project";
 import Technology from "@/models/Technology";
 
@@ -57,6 +58,33 @@ const fallbackExperiences = [
   },
 ];
 
+export const fallbackHomeContent = {
+  heroImageUrl: "/jkimage.png",
+  trustedCompanies: [
+    { name: "Tech4edges", color: "var(--primary)" },
+    { name: "Anora", color: "var(--secondary)" },
+    { name: "Nextt", color: "#8B5CF6" },
+    { name: "DevMates", color: "#F59E0B" },
+  ],
+  testimonials: [
+    {
+      text: "Muhammad's technical expertise and dedication to delivering quality solutions made our collaboration seamless. His MERN stack skills are top-notch.",
+      name: "Sarah Johnson",
+      role: "Product Manager at Tech4edges",
+    },
+    {
+      text: "Working with Jalal on our event platform was a game-changer. He brought innovative solutions and maintained excellent code quality throughout the project.",
+      name: "Ahmed Khan",
+      role: "Co-founder at Nextt",
+    },
+    {
+      text: "His ability to scale applications and manage complex systems is impressive. A reliable developer who consistently delivers beyond expectations.",
+      name: "Emily Chen",
+      role: "CTO at StartupHub",
+    },
+  ],
+};
+
 export async function getProjects() {
   try {
     await dbConnect();
@@ -92,5 +120,15 @@ export async function getTechnologies() {
     return await Technology.find().sort({ createdAt: -1 }).lean();
   } catch {
     return fallbackTech;
+  }
+}
+
+export async function getHomeContent() {
+  try {
+    await dbConnect();
+    const content = await HomeContent.findOne().sort({ updatedAt: -1 }).lean();
+    return content ?? fallbackHomeContent;
+  } catch {
+    return fallbackHomeContent;
   }
 }

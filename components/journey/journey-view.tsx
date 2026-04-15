@@ -5,7 +5,21 @@ import { useRef } from "react";
 import { GraduationCap, Briefcase, Rocket, Users } from "lucide-react";
 import { SpotlightCard } from "@/components/ui/spotlight-card";
 
-export function JourneyView() {
+export type ExperienceItem = {
+  _id: string;
+  role: string;
+  company: string;
+  timeframe: string;
+  description: string;
+};
+
+type JourneyViewProps = {
+  experiences: ExperienceItem[];
+};
+
+const experiencePalette = ["#6366F1", "#8B5CF6", "#D946EF", "#10B981", "#F59E0B", "#0EA5E9"];
+
+export function JourneyView({ experiences }: JourneyViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -13,6 +27,13 @@ export function JourneyView() {
   });
 
   const lineHeight = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+  const experienceNodes = experiences.map((experience, index) => ({
+    icon: Briefcase,
+    title: `${experience.role} @ ${experience.company}`,
+    content: experience.description,
+    timeframe: experience.timeframe,
+    color: experiencePalette[index % experiencePalette.length],
+  }));
 
   const journeyNodes = [
     {
@@ -21,12 +42,7 @@ export function JourneyView() {
       content: "Bachelor of Science in Information Technology, Agriculture University Peshawar.",
       color: "#6366F1",
     },
-    {
-      icon: Briefcase,
-      title: "Experience",
-      content: "Junior Developer at Tech4edges.",
-      color: "#8B5CF6",
-    },
+    ...experienceNodes,
     {
       icon: Rocket,
       title: "Entrepreneurship",
@@ -87,6 +103,11 @@ export function JourneyView() {
                     <h3 className="mb-4" style={{ color: node.color }}>
                       {node.title}
                     </h3>
+                    {"timeframe" in node && node.timeframe ? (
+                      <p className="mb-4 text-sm uppercase tracking-[0.12em]" style={{ color: "color-mix(in srgb, var(--foreground) 60%, transparent)" }}>
+                        {node.timeframe}
+                      </p>
+                    ) : null}
                     <p className="mb-6 text-lg" style={{ color: "var(--text-secondary)" }}>
                       {node.content}
                     </p>

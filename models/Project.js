@@ -13,6 +13,4 @@ const ProjectSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-ProjectSchema.index({ slug: 1 }, { unique: true });
-
 export default mongoose.models.Project || mongoose.model("Project", ProjectSchema);

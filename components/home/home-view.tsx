@@ -26,34 +26,48 @@ type ProjectItem = {
 type HomeViewProps = {
   projects: ProjectItem[];
   technologies: typeof coreTechs;
+  homeContent: {
+    heroImageUrl?: string;
+    trustedCompanies?: { name: string; color?: string }[];
+    testimonials?: { text: string; name: string; role: string }[];
+  };
 };
 
-export function HomeView({ projects, technologies }: HomeViewProps) {
+export function HomeView({ projects, technologies, homeContent }: HomeViewProps) {
   const techStack = technologies.length ? technologies : coreTechs;
-  const trustCards = [
-    { name: "Tech4edges", icon: Globe2, color: "var(--primary)" },
-    { name: "Anora", icon: Zap, color: "var(--secondary)" },
-    { name: "Nextt", icon: Activity, color: "#8B5CF6" },
-    { name: "DevMates", icon: Code2, color: "#F59E0B" },
-  ];
+  const trustCards = (homeContent.trustedCompanies?.length ? homeContent.trustedCompanies : [
+    { name: "Tech4edges", color: "var(--primary)" },
+    { name: "Anora", color: "var(--secondary)" },
+    { name: "Nextt", color: "#8B5CF6" },
+    { name: "DevMates", color: "#F59E0B" },
+  ]).map((item, index) => {
+    const icons = [Globe2, Zap, Activity, Code2];
+    return {
+      ...item,
+      icon: icons[index % icons.length],
+      color: item.color || "var(--primary)",
+    };
+  });
   const trustLoop = [...trustCards, ...trustCards, ...trustCards, ...trustCards];
-  const testimonials = [
-    {
-      text: "Muhammad's technical expertise and dedication to delivering quality solutions made our collaboration seamless. His MERN stack skills are top-notch.",
-      name: "Sarah Johnson",
-      role: "Product Manager at Tech4edges",
-    },
-    {
-      text: "Working with Jalal on our event platform was a game-changer. He brought innovative solutions and maintained excellent code quality throughout the project.",
-      name: "Ahmed Khan",
-      role: "Co-founder at Nextt",
-    },
-    {
-      text: "His ability to scale applications and manage complex systems is impressive. A reliable developer who consistently delivers beyond expectations.",
-      name: "Emily Chen",
-      role: "CTO at StartupHub",
-    },
-  ];
+  const testimonials = homeContent.testimonials?.length
+    ? homeContent.testimonials
+    : [
+        {
+          text: "Muhammad's technical expertise and dedication to delivering quality solutions made our collaboration seamless. His MERN stack skills are top-notch.",
+          name: "Sarah Johnson",
+          role: "Product Manager at Tech4edges",
+        },
+        {
+          text: "Working with Jalal on our event platform was a game-changer. He brought innovative solutions and maintained excellent code quality throughout the project.",
+          name: "Ahmed Khan",
+          role: "Co-founder at Nextt",
+        },
+        {
+          text: "His ability to scale applications and manage complex systems is impressive. A reliable developer who consistently delivers beyond expectations.",
+          name: "Emily Chen",
+          role: "CTO at StartupHub",
+        },
+      ];
 
   return (
     <div className="relative -mt-24  min-h-screen">
@@ -83,19 +97,6 @@ export function HomeView({ projects, technologies }: HomeViewProps) {
             </motion.p>
 
             <motion.div className="flex items-center gap-6 mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-              <div className="relative">
-                <div className="w-20 h-20 rounded-full overflow-hidden border-[3px]" style={{ borderColor: "var(--primary)" }}>
-                  <Image
-                    src="https://images.unsplash.com/photo-1656313965911-a4aef45a18ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080"
-                    alt="Muhammad Jalal"
-                    width={80}
-                    height={80}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-[var(--background)]" />
-                <div className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 rounded-full animate-ping opacity-75" />
-              </div>
               <h1 className="tracking-tight text-[var(--foreground)]" style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)" }}>
                 Muhammad Jalal.
               </h1>
@@ -108,10 +109,10 @@ export function HomeView({ projects, technologies }: HomeViewProps) {
             <motion.div className="flex gap-6 mt-8" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
               <Link href="/projects" className="relative group inline-block">
                 <motion.button
-                  className="relative px-8 py-4 rounded-full font-semibold flex items-center gap-2 transition-all bg-[var(--primary)] text-[var(--primary-foreground)] overflow-hidden border border-transparent hover:border-white/20"
-                  style={{ boxShadow: "none" }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  className="relative px-8 py-4 rounded-full font-semibold flex items-center gap-2 transition-all bg-[var(--primary)] text-[var(--primary-foreground)] overflow-hidden border border-transparent hover:border-white/25"
+                  style={{ boxShadow: "0 18px 46px color-mix(in srgb, var(--primary) 30%, transparent)" }}
+                  whileHover={{ scale: 1.05, y: -3 }}
+                  whileTap={{ scale: 0.96, y: 0 }}
                 >
                   <motion.div
                     className="absolute inset-0 w-1/2 h-full skew-x-12 opacity-0 group-hover:opacity-30 pointer-events-none"
@@ -123,8 +124,23 @@ export function HomeView({ projects, technologies }: HomeViewProps) {
                     whileHover={{ left: "200%" }}
                     transition={{ duration: 0.8, ease: "easeInOut" }}
                   />
+                  <motion.div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none"
+                    style={{
+                      background:
+                        "linear-gradient(120deg, rgba(255,255,255,0.08) 10%, rgba(255,255,255,0.3) 45%, rgba(255,255,255,0.08) 80%)",
+                      transform: "translateX(-130%)",
+                    }}
+                    whileHover={{ transform: "translateX(130%)" }}
+                    transition={{ duration: 0.85, ease: "easeInOut" }}
+                  />
+                  <motion.div
+                    className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100"
+                    style={{ background: "radial-gradient(circle at 30% 10%, rgba(255,255,255,0.25), transparent 60%)" }}
+                    transition={{ duration: 0.3 }}
+                  />
                   <span className="relative z-10 tracking-wide">Explore Work</span>
-                  <ArrowRight size={18} className="relative z-10 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight size={18} className="relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
                 </motion.button>
               </Link>
 
@@ -132,8 +148,13 @@ export function HomeView({ projects, technologies }: HomeViewProps) {
                 <motion.button
                   className="relative px-8 py-4 rounded-full font-semibold transition-all border text-[var(--foreground)] overflow-hidden backdrop-blur-md"
                   style={{ background: "var(--glass-bg)", borderColor: "var(--card-border)" }}
-                  whileHover={{ borderColor: "var(--primary)", color: "var(--primary)" }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{
+                    borderColor: "color-mix(in srgb, var(--primary) 55%, white)",
+                    color: "var(--primary)",
+                    y: -3,
+                    boxShadow: "0 16px 40px color-mix(in srgb, var(--primary) 28%, transparent)",
+                  }}
+                  whileTap={{ scale: 0.96, y: 0 }}
                 >
                   <motion.div
                     className="absolute inset-0 opacity-0 group-hover:opacity-10 pointer-events-none"
@@ -141,6 +162,16 @@ export function HomeView({ projects, technologies }: HomeViewProps) {
                     initial={{ scale: 0.5 }}
                     whileHover={{ scale: 1.5 }}
                     transition={{ duration: 0.4 }}
+                  />
+                  <motion.div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none"
+                    style={{
+                      background:
+                        "linear-gradient(120deg, rgba(255,255,255,0.04) 10%, rgba(255,255,255,0.25) 45%, rgba(255,255,255,0.04) 80%)",
+                      transform: "translateX(-130%)",
+                    }}
+                    whileHover={{ transform: "translateX(130%)" }}
+                    transition={{ duration: 1, ease: "easeInOut" }}
                   />
                   <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
                     <motion.div
@@ -163,13 +194,14 @@ export function HomeView({ projects, technologies }: HomeViewProps) {
             transition={{ duration: 0.8, delay: 0.4 }}
             data-cursor-hover="true"
           >
-            <div className="absolute inset-0 w-full h-full pointer-events-auto z-10 flex items-center justify-center">
-              <iframe
-                src="https://my.spline.design/reactiveorb-vdYIfZBIAMx2bUw2Uugojnmq/"
-                width="100%"
-                height="100%"
-                style={{ border: "none", background: "transparent" }}
-                title="Spline 3D Integration"
+            <div className="absolute inset-0 w-full h-full z-10 rounded-3xl overflow-hidden ">
+              <Image
+                src={homeContent.heroImageUrl || "/jkimage.png"}
+                alt="Hero portrait"
+                fill
+                sizes="(max-width: 1024px) 80vw, 460px"
+                className="object-cover"
+                priority
               />
             </div>
             <motion.div
@@ -184,9 +216,9 @@ export function HomeView({ projects, technologies }: HomeViewProps) {
 
       <section id="metrics" className="py-24 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-3 gap-6">
-            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-              <SpotlightCard className="lg:col-span-2 rounded-2xl p-8">
+          <div className="grid lg:grid-cols-12 gap-6">
+            <motion.div className="lg:col-span-8" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+              <SpotlightCard className="w-full rounded-2xl p-8">
               <h3 className="mb-8">Core Technologies</h3>
               <div className="relative overflow-hidden flex flex-col gap-4">
                 <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[var(--glass-bg)] to-transparent z-10 pointer-events-none" />
@@ -237,7 +269,7 @@ export function HomeView({ projects, technologies }: HomeViewProps) {
               </SpotlightCard>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.1 }}>
+            <motion.div className="lg:col-span-4" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.1 }}>
               <SpotlightCard className="rounded-2xl p-8">
               <div className="relative z-10">
                 <div
