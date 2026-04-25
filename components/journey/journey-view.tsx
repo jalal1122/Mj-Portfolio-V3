@@ -37,29 +37,7 @@ export function JourneyView({ experiences }: JourneyViewProps) {
   }));
 
   const journeyNodes = [
-    {
-      icon: GraduationCap,
-      title: "Education",
-      content: "Bachelor of Science in Information Technology, Agriculture University Peshawar.",
-      color: "#6366F1",
-    },
     ...experienceNodes,
-    {
-      icon: Rocket,
-      title: "Entrepreneurship",
-      content: "Co-founder of two innovative ventures in Health & Beauty and Event Management.",
-      businesses: [
-        { name: "Anora", description: "Health & Beauty platform" },
-        { name: "Nextt", description: "Event management platform" },
-      ],
-      color: "#D946EF",
-    },
-    {
-      icon: Users,
-      title: "Communities",
-      content: "Founder of DevMates.",
-      color: "#10B981",
-    },
   ];
 
   return (

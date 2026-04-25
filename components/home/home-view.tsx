@@ -239,7 +239,7 @@ export function HomeView({ projects, technologies, homeContent }: HomeViewProps)
                   animate={{ x: ["0%", "-50%"] }}
                   transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
                 >
-                  {[...techStack, ...techStack].map((tech, idx) => (
+                  {[...techStack].map((tech, idx) => (
                     <div
                       key={`row1-${idx}`}
                       className="px-6 py-3 w-full rounded-full whitespace-nowrap border transition-colors"
