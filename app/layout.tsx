@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={`${plusJakarta.variable} h-full antialiased`}>
-      <body className="min-h-full bg-background">
+      <body suppressHydrationWarning className="min-h-full bg-background">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           {/* <AuroraBackground /> */}
           <FloatingShapes />

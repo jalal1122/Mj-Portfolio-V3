@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { SpotlightCard } from "@/components/ui/spotlight-card";
 import { getProjects } from "@/lib/content";
+import { getSafeImageSrc } from "@/lib/image";
 
 export default async function ProjectsPage() {
   const projects = await getProjects();
@@ -17,7 +18,7 @@ export default async function ProjectsPage() {
             <SpotlightCard key={project._id} className="break-inside-avoid mb-3 rounded-2xl overflow-hidden">
               <div className="relative aspect-[16/10]">
                 <Image
-                  src={project.cloudinaryImageUrl}
+                  src={getSafeImageSrc(project.cloudinaryImageUrl)}
                   alt={project.title}
                   fill
                   className="object-cover"

@@ -19,7 +19,7 @@ const TestimonialSchema = new mongoose.Schema(
 
 const HomeContentSchema = new mongoose.Schema(
   {
-    heroImageUrl: { type: String, default: "/jkimage.png", trim: true },
+    heroImageUrl: { type: String, default: "/jkimage.jpeg", trim: true },
     trustedCompanies: { type: [TrustedCompanySchema], default: [] },
     testimonials: { type: [TestimonialSchema], default: [] },
   },

@@ -59,7 +59,7 @@ const fallbackExperiences = [
 ];
 
 export const fallbackHomeContent = {
-  heroImageUrl: "/jkimage.png",
+  heroImageUrl: "/jkimage.jpeg",
   trustedCompanies: [
     { name: "Tech4edges", color: "var(--primary)" },
     { name: "Anora", color: "var(--secondary)" },

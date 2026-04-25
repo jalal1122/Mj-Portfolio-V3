@@ -6,6 +6,7 @@ import Image from "next/image";
 import { ArrowLeft, ExternalLink, Code2, MonitorPlay, Zap } from "lucide-react";
 import { useRef } from "react";
 import { SpotlightCard } from "@/components/ui/spotlight-card";
+import { getSafeImageSrc } from "@/lib/image";
 
 type TechItem = { _id?: string; name?: string } | string;
 
@@ -41,7 +42,7 @@ export function ProjectDetailView({ project }: ProjectDetailViewProps) {
     tech: (project.techStack ?? []).map((item) => (typeof item === "string" ? item : item.name || "Tech")),
     role: "Full Stack Developer",
     timeline: "2 Months",
-    image: project.cloudinaryImageUrl,
+    image: getSafeImageSrc(project.cloudinaryImageUrl),
     features: [
       {
         title: "Real-time Analytics",
@@ -67,7 +68,13 @@ export function ProjectDetailView({ project }: ProjectDetailViewProps) {
         <motion.div className="absolute inset-0 w-full h-full" style={{ y, opacity }}>
           <div className="absolute inset-0 bg-[var(--background)]/40 z-10 mix-blend-multiply" />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--background)] via-[var(--background)]/60 to-transparent z-20" />
-          <Image src={projectData.image} alt={projectData.title} fill className="object-cover" />
+          <Image
+            src={projectData.image}
+            alt={projectData.title}
+            fill
+            className="object-cover"
+            sizes="100vw"
+          />
         </motion.div>
 
         <div className="absolute top-32 left-6 z-30">

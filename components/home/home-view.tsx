@@ -15,6 +15,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { SpotlightCard } from "@/components/ui/spotlight-card";
 import { coreTechs } from "@/lib/site-data";
+import { getSafeImageSrc } from "@/lib/image";
 
 type ProjectItem = {
   _id: string;
@@ -34,6 +35,7 @@ type HomeViewProps = {
 };
 
 export function HomeView({ projects, technologies, homeContent }: HomeViewProps) {
+  const heroImageSrc = getSafeImageSrc(homeContent.heroImageUrl);
   const techStack = technologies.length ? technologies : coreTechs;
   const trustCards = (homeContent.trustedCompanies?.length ? homeContent.trustedCompanies : [
     { name: "Tech4edges", color: "var(--primary)" },
@@ -196,11 +198,11 @@ export function HomeView({ projects, technologies, homeContent }: HomeViewProps)
           >
             <div className="absolute inset-0 w-full h-full z-10 rounded-3xl overflow-hidden ">
               <Image
-                src={homeContent.heroImageUrl || "/jkimage.png"}
+                src={heroImageSrc}
                 alt="Hero portrait"
                 fill
                 sizes="(max-width: 1024px) 80vw, 460px"
-                className="object-cover"
+                className="object-cover object-top"
                 priority
               />
             </div>
@@ -231,7 +233,7 @@ export function HomeView({ projects, technologies, homeContent }: HomeViewProps)
                   {[...techStack, ...techStack].map((tech, idx) => (
                     <div
                       key={`row1-${idx}`}
-                      className="px-6 py-3 rounded-full whitespace-nowrap border transition-colors"
+                      className="px-6 py-3 w-full rounded-full whitespace-nowrap border transition-colors"
                       style={{
                         color: "var(--primary)",
                         background: "color-mix(in srgb, var(--primary) 10%, transparent)",

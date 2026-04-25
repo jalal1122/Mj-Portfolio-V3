@@ -37,7 +37,7 @@ const defaultTechnology = {
 };
 
 const defaultHomeContent = {
-  heroImageUrl: "/jkimage.png",
+  heroImageUrl: "/jkimage.jpeg",
   trustedCompanies: [{ name: "", color: "" }],
   testimonials: [{ text: "", name: "", role: "" }],
 };
@@ -92,7 +92,7 @@ export function AdminDashboard() {
     if (home?._id) {
       setEditingHomeContentId(home._id);
       setHomeContentForm({
-        heroImageUrl: home.heroImageUrl || "/jkimage.png",
+        heroImageUrl: home.heroImageUrl || "/jkimage.jpeg",
         trustedCompanies: home.trustedCompanies?.length ? home.trustedCompanies : [{ name: "", color: "" }],
         testimonials: home.testimonials?.length ? home.testimonials : [{ text: "", name: "", role: "" }],
       });
@@ -167,7 +167,7 @@ export function AdminDashboard() {
 
   const saveHomeContent = async () => {
     const payload = {
-      heroImageUrl: homeContentForm.heroImageUrl.trim() || "/jkimage.png",
+      heroImageUrl: homeContentForm.heroImageUrl.trim() || "/jkimage.jpeg",
       trustedCompanies: homeContentForm.trustedCompanies.filter((item) => item.name.trim()),
       testimonials: homeContentForm.testimonials.filter((item) => item.text.trim() && item.name.trim() && item.role.trim()),
     };
