@@ -3,6 +3,8 @@ import dbConnect from "@/lib/dbConnect";
 import Technology from "@/models/Technology";
 import { isMutationAllowed, jsonError } from "@/lib/api-helpers";
 
+const LEGACY_TECH_SVG_PLACEHOLDER = "https://placeholder.invalid/tech.svg";
+
 export async function GET() {
   try {
     await dbConnect();
@@ -21,9 +23,21 @@ export async function POST(request: Request) {
   try {
     await dbConnect();
     const body = await request.json();
-    const created = await Technology.create(body);
+    const created = await Technology.create({
+      ...body,
+      cloudinarySvgUrl: body.cloudinarySvgUrl || LEGACY_TECH_SVG_PLACEHOLDER,
+      color: body.color ?? "",
+    });
     return NextResponse.json({ success: true, data: created }, { status: 201 });
-  } catch {
+  } catch (error: unknown) {
+    const mongoError = error as { code?: number; name?: string; errors?: Record<string, { message?: string }> };
+    if (mongoError.code === 11000) {
+      return jsonError("Technology with this name already exists.", 409);
+    }
+    if (mongoError.name === "ValidationError") {
+      const firstError = Object.values(mongoError.errors ?? {})[0]?.message;
+      return jsonError(firstError || "Invalid technology payload.", 422);
+    }
     return jsonError("Unable to create technology.", 500);
   }
 }

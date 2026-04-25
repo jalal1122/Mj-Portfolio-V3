@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 import { SpotlightCard } from "@/components/ui/spotlight-card";
 import { coreTechs } from "@/lib/site-data";
 import { getSafeImageSrc } from "@/lib/image";
@@ -35,6 +36,7 @@ type HomeViewProps = {
 };
 
 export function HomeView({ projects, technologies, homeContent }: HomeViewProps) {
+  const [expandedTestimonials, setExpandedTestimonials] = useState<Record<number, boolean>>({});
   const heroImageSrc = getSafeImageSrc(homeContent.heroImageUrl);
   const techStack = technologies.length ? technologies : coreTechs;
   const trustCards = (homeContent.trustedCompanies?.length ? homeContent.trustedCompanies : [
@@ -51,6 +53,8 @@ export function HomeView({ projects, technologies, homeContent }: HomeViewProps)
     };
   });
   const trustLoop = [...trustCards, ...trustCards, ...trustCards, ...trustCards];
+  const trustLoopForward = [...trustCards, ...trustCards, ...trustCards];
+  const trustLoopReverse = [...trustCards].reverse().concat([...trustCards].reverse(), [...trustCards].reverse());
   const testimonials = homeContent.testimonials?.length
     ? homeContent.testimonials
     : [
@@ -72,8 +76,8 @@ export function HomeView({ projects, technologies, homeContent }: HomeViewProps)
       ];
 
   return (
-    <div className="relative -mt-24  min-h-screen">
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+    <div className="relative sm:-mt-24 sm:min-h-screen">
+      <section className="relative sm:h-screen flex items-center justify-center overflow-hidden pt-8 sm:pt-0">
         <div className="absolute inset-0 opacity-30">
           {/* <motion.div
             className="absolute inset-0"
@@ -86,7 +90,7 @@ export function HomeView({ projects, technologies, homeContent }: HomeViewProps)
           /> */}
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }}>
             <motion.p
               className="uppercase tracking-[0.2em] mb-6 text-[var(--text-secondary)]"
@@ -108,10 +112,15 @@ export function HomeView({ projects, technologies, homeContent }: HomeViewProps)
               Junior Developer &amp; AI Enthusiast specializing in the MERN stack and Next.js.
             </motion.p>
 
-            <motion.div className="flex gap-6 mt-8" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
-              <Link href="/projects" className="relative group inline-block">
+            <motion.div
+              className="mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-6 w-full sm:w-auto"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+            >
+              <Link href="/projects" className="relative group inline-block w-full sm:w-auto">
                 <motion.button
-                  className="relative px-8 py-4 rounded-full font-semibold flex items-center gap-2 transition-all bg-[var(--primary)] text-[var(--primary-foreground)] overflow-hidden border border-transparent hover:border-white/25"
+                  className="relative w-full sm:w-auto px-5 sm:px-7 md:px-8 py-3 sm:py-4 rounded-full text-sm sm:text-base font-semibold flex items-center justify-center gap-2 transition-all bg-[var(--primary)] text-[var(--primary-foreground)] overflow-hidden border border-transparent hover:border-white/25"
                   style={{ boxShadow: "0 18px 46px color-mix(in srgb, var(--primary) 30%, transparent)" }}
                   whileHover={{ scale: 1.05, y: -3 }}
                   whileTap={{ scale: 0.96, y: 0 }}
@@ -146,9 +155,9 @@ export function HomeView({ projects, technologies, homeContent }: HomeViewProps)
                 </motion.button>
               </Link>
 
-              <Link href="/contact" className="relative group inline-block">
+              <Link href="/contact" className="relative group inline-block w-full sm:w-auto">
                 <motion.button
-                  className="relative px-8 py-4 rounded-full font-semibold transition-all border text-[var(--foreground)] overflow-hidden backdrop-blur-md"
+                  className="relative w-full sm:w-auto px-5 sm:px-7 md:px-8 py-3 sm:py-4 rounded-full text-sm sm:text-base font-semibold transition-all border text-[var(--foreground)] overflow-hidden backdrop-blur-md"
                   style={{ background: "var(--glass-bg)", borderColor: "var(--card-border)" }}
                   whileHover={{
                     borderColor: "color-mix(in srgb, var(--primary) 55%, white)",
@@ -190,7 +199,7 @@ export function HomeView({ projects, technologies, homeContent }: HomeViewProps)
           </motion.div>
 
           <motion.div
-            className="flex items-center justify-center relative w-full max-w-[500px] aspect-square mx-auto"
+            className="flex items-center justify-center relative w-full max-w-[320px] sm:max-w-[420px] lg:max-w-[500px] aspect-square mx-auto"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
@@ -218,9 +227,9 @@ export function HomeView({ projects, technologies, homeContent }: HomeViewProps)
 
       <section id="metrics" className="py-24 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-12 gap-6">
+          <div className="grid sm:grid-cols-12 grid-cols-1 gap-6">
             <motion.div className="lg:col-span-8" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-              <SpotlightCard className="w-full rounded-2xl p-8">
+              <SpotlightCard className="w-full rounded-2xl p-4 sm:p-8">
               <h3 className="mb-8">Core Technologies</h3>
               <div className="relative overflow-hidden flex flex-col gap-4">
                 <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[var(--glass-bg)] to-transparent z-10 pointer-events-none" />
@@ -272,7 +281,7 @@ export function HomeView({ projects, technologies, homeContent }: HomeViewProps)
             </motion.div>
 
             <motion.div className="lg:col-span-4" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.1 }}>
-              <SpotlightCard className="rounded-2xl p-8">
+              <SpotlightCard className="rounded-2xl p-4 sm:p-8">
               <div className="relative z-10">
                 <div
                   className="w-12 h-12 rounded-lg flex items-center justify-center mb-6 border"
@@ -304,7 +313,7 @@ export function HomeView({ projects, technologies, homeContent }: HomeViewProps)
           />
         </div>
         <div className="max-w-7xl mx-auto relative z-10">
-          <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+          <motion.div className="text-center mb-10 sm:mb-16" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 border" style={{ borderColor: "var(--card-border)", background: "var(--glass-bg)" }}>
               <ShieldCheck size={16} style={{ color: "var(--secondary)" }} />
               <span className="text-sm font-semibold uppercase tracking-widest" style={{ color: "var(--secondary)" }}>
@@ -312,12 +321,12 @@ export function HomeView({ projects, technologies, homeContent }: HomeViewProps)
               </span>
             </div>
             <h2 className="mb-4">Trusted By The Best</h2>
-            <p className="text-xl max-w-2xl mx-auto" style={{ color: "var(--text-secondary)" }}>
+            <p className="text-base sm:text-xl max-w-2xl mx-auto" style={{ color: "var(--text-secondary)" }}>
               Collaborating with innovative companies, visionary startups, and forward-thinking teams.
             </p>
           </motion.div>
 
-          <div className="relative flex overflow-hidden group py-4">
+          <div className="relative hidden lg:flex overflow-hidden group py-4">
             <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[var(--background)] to-transparent z-10 pointer-events-none" />
             <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[var(--background)] to-transparent z-10 pointer-events-none" />
             <motion.div className="flex gap-8 items-center w-max" animate={{ x: ["0%", "-50%"] }} transition={{ duration: 25, repeat: Infinity, ease: "linear" }}>
@@ -330,6 +339,45 @@ export function HomeView({ projects, technologies, homeContent }: HomeViewProps)
                   >
                     <Icon size={42} color={company.color} className="mb-4 opacity-80 group-hover/card:opacity-100 transition-opacity" />
                     <h4 className="group-hover/card:text-[var(--primary)] transition-colors" style={{ fontSize: "20px", fontWeight: 700 }}>
+                      {company.name}
+                    </h4>
+                  </SpotlightCard>
+                );
+              })}
+            </motion.div>
+          </div>
+
+          <div className="relative lg:hidden space-y-3 overflow-hidden py-2">
+            <div className="absolute inset-y-0 left-0 w-14 sm:w-20 bg-gradient-to-r from-[var(--background)] to-transparent z-10 pointer-events-none" />
+            <div className="absolute inset-y-0 right-0 w-14 sm:w-20 bg-gradient-to-l from-[var(--background)] to-transparent z-10 pointer-events-none" />
+
+            <motion.div className="flex gap-3 sm:gap-4 items-center w-max" animate={{ x: ["0%", "-50%"] }} transition={{ duration: 18, repeat: Infinity, ease: "linear" }}>
+              {trustLoopForward.map((company, index) => {
+                const Icon = company.icon;
+                return (
+                  <SpotlightCard
+                    key={`mobile-forward-${company.name}-${index}`}
+                    className="flex flex-col items-center justify-center p-4 sm:p-5 rounded-xl w-[150px] sm:w-[185px] group/card backdrop-blur-md"
+                  >
+                    <Icon size={26} color={company.color} className="mb-2 sm:mb-3 opacity-80 group-hover/card:opacity-100 transition-opacity" />
+                    <h4 className="group-hover/card:text-[var(--primary)] transition-colors text-[15px] sm:text-base font-semibold text-center leading-tight">
+                      {company.name}
+                    </h4>
+                  </SpotlightCard>
+                );
+              })}
+            </motion.div>
+
+            <motion.div className="flex gap-3 sm:gap-4 items-center w-max" animate={{ x: ["-50%", "0%"] }} transition={{ duration: 17, repeat: Infinity, ease: "linear" }}>
+              {trustLoopReverse.map((company, index) => {
+                const Icon = company.icon;
+                return (
+                  <SpotlightCard
+                    key={`mobile-reverse-${company.name}-${index}`}
+                    className="flex flex-col items-center justify-center p-4 sm:p-5 rounded-xl w-[150px] sm:w-[185px] group/card backdrop-blur-md"
+                  >
+                    <Icon size={26} color={company.color} className="mb-2 sm:mb-3 opacity-80 group-hover/card:opacity-100 transition-opacity" />
+                    <h4 className="group-hover/card:text-[var(--primary)] transition-colors text-[15px] sm:text-base font-semibold text-center leading-tight">
                       {company.name}
                     </h4>
                   </SpotlightCard>
@@ -362,9 +410,36 @@ export function HomeView({ projects, technologies, homeContent }: HomeViewProps)
                       <Star key={`${testimonial.name}-${i}`} size={16} style={{ color: "var(--secondary)", fill: "var(--secondary)" }} />
                     ))}
                   </div>
-                  <p className="mb-6 leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                  <p
+                    className="mb-3 leading-relaxed"
+                    style={{
+                      color: "var(--text-secondary)",
+                      ...(expandedTestimonials[index]
+                        ? {}
+                        : {
+                            display: "-webkit-box",
+                            WebkitLineClamp: 5,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                          }),
+                    }}
+                  >
                     "{testimonial.text}"
                   </p>
+                  {testimonial.text.length > 180 ? (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setExpandedTestimonials((state) => ({
+                          ...state,
+                          [index]: !state[index],
+                        }))
+                      }
+                      className="mb-5 text-xs font-semibold text-[var(--secondary)] hover:opacity-90"
+                    >
+                      {expandedTestimonials[index] ? "Show less" : "More"}
+                    </button>
+                  ) : null}
                   <div className="border-t pt-4" style={{ borderColor: "var(--card-border)" }}>
                     <h4 className="mb-1" style={{ fontSize: "16px" }}>
                       {testimonial.name}

@@ -26,18 +26,18 @@ export function MetricsView({ metrics }: MetricsViewProps) {
   const languageData = metrics.languageData;
 
   return (
-    <div className="relative -mt-24 -mb-24 min-h-screen pt-32 pb-24 px-6">
+    <div className="relative -mt-24 -mb-24 min-h-screen pt-28 sm:pt-32 pb-20 sm:pb-24 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
-        <motion.div className="mb-24" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+        <motion.div className="mb-14 sm:mb-24" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
           <h2 className="mb-4 text-3xl md:text-5xl font-semibold tracking-tight text-[var(--foreground)]">Metrics &amp; Stats</h2>
-          <p className="text-xl sub-heading" style={{ color: "var(--text-secondary)" }}>
+          <p className="text-base sm:text-xl sub-heading" style={{ color: "var(--text-secondary)" }}>
             Data-driven insights into development activity and impact for @{metrics.username}.
           </p>
         </motion.div>
 
         <div className="space-y-6">
           <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-            <SpotlightCard className="rounded-2xl p-8">
+            <SpotlightCard className="rounded-2xl p-4 sm:p-8">
             <div className="relative z-10">
               <div className="flex items-center gap-3 mb-8">
                 <div
@@ -69,7 +69,7 @@ export function MetricsView({ metrics }: MetricsViewProps) {
                 </div>
               </div>
 
-              <div className="flex items-center gap-6 mt-6">
+              <div className="flex items-center gap-4 sm:gap-6 mt-6">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-sm bg-[var(--muted)]" />
                   <span style={{ fontSize: "14px", color: "var(--text-secondary)" }}>Less</span>
@@ -85,7 +85,7 @@ export function MetricsView({ metrics }: MetricsViewProps) {
 
           <div className="grid lg:grid-cols-2 gap-6">
             <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.1 }}>
-              <SpotlightCard className="rounded-2xl p-8">
+              <SpotlightCard className="rounded-2xl p-4 sm:p-8">
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-8">
                   <div
@@ -100,7 +100,7 @@ export function MetricsView({ metrics }: MetricsViewProps) {
                   <h3 className="text-[var(--foreground)]">Language Breakdown</h3>
                 </div>
 
-                <div className="flex items-center gap-8">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-8">
                   <div style={{ width: 180, height: 180 }}>
                     <PieChart width={180} height={180}>
                       <Pie data={languageData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={2} dataKey="value">
@@ -111,7 +111,7 @@ export function MetricsView({ metrics }: MetricsViewProps) {
                     </PieChart>
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="space-y-3 w-full">
                     {languageData.map((lang) => (
                       <div key={lang.name} className="flex items-center gap-3">
                         <div className="w-4 h-4 rounded-sm" style={{ background: lang.color }} />
@@ -128,7 +128,7 @@ export function MetricsView({ metrics }: MetricsViewProps) {
             </motion.div>
 
             <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2 }}>
-              <SpotlightCard className="rounded-2xl p-8">
+              <SpotlightCard className="rounded-2xl p-4 sm:p-8">
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-8">
                   <div className="w-12 h-12 rounded-lg flex items-center justify-center border" style={{ background: "rgba(217, 70, 239, 0.1)", borderColor: "rgba(217, 70, 239, 0.2)" }}>
@@ -139,14 +139,14 @@ export function MetricsView({ metrics }: MetricsViewProps) {
 
                 <div className="space-y-8">
                   <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 }}>
-                    <div className="mb-2" style={{ fontSize: "48px", fontWeight: 800, color: "#6366F1", lineHeight: 1 }}>
+                    <div className="mb-2" style={{ fontSize: "clamp(2rem, 8vw, 3rem)", fontWeight: 800, color: "#6366F1", lineHeight: 1 }}>
                       {metrics.impact.repos}+
                     </div>
                     <p style={{ fontSize: "16px", color: "var(--text-secondary)" }}>Public Repositories</p>
                   </motion.div>
 
                   <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.4 }}>
-                    <div className="mb-2" style={{ fontSize: "48px", fontWeight: 800, lineHeight: 1, color: "var(--secondary)" }}>
+                    <div className="mb-2" style={{ fontSize: "clamp(2rem, 8vw, 3rem)", fontWeight: 800, lineHeight: 1, color: "var(--secondary)" }}>
                       {metrics.impact.stars}
                     </div>
                     <p style={{ fontSize: "16px", color: "var(--text-secondary)" }}>Total Stars</p>

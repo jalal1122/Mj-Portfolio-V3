@@ -44,9 +44,9 @@ export function ContactForm() {
 
   return (
     <div className="max-w-2xl w-full mx-auto">
-      <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+      <motion.div className="text-center mb-10 sm:mb-16" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
         <h2 className="mb-4 text-3xl md:text-5xl font-semibold tracking-tight text-[var(--foreground)]">Let's Connect</h2>
-        <p className="text-xl sub-heading" style={{ color: "var(--text-secondary)" }}>
+        <p className="text-base sm:text-xl sub-heading" style={{ color: "var(--text-secondary)" }}>
           Have a project in mind or want to collaborate? Drop me a message.
         </p>
       </motion.div>
@@ -81,7 +81,7 @@ export function ContactForm() {
         </SpotlightCard>
       </div>
 
-      <SpotlightCard className="rounded-2xl p-12">
+      <SpotlightCard className="rounded-2xl p-5 sm:p-12">
       <motion.div
         className="relative"
         style={{ backdropFilter: "blur(12px)" }}
@@ -107,7 +107,7 @@ export function ContactForm() {
               onChange={(event) => setName(event.target.value)}
               onFocus={() => setFocusedField("name")}
               onBlur={() => setFocusedField(null)}
-              className="w-full px-6 py-4 rounded-lg transition-all outline-none border"
+              className="w-full px-4 sm:px-6 py-3.5 sm:py-4 rounded-lg transition-all outline-none border"
               style={{
                 background: "var(--input-background)",
                 borderColor: focusedField === "name" ? "var(--primary)" : "var(--border)",
@@ -130,7 +130,7 @@ export function ContactForm() {
               onChange={(event) => setEmail(event.target.value)}
               onFocus={() => setFocusedField("email")}
               onBlur={() => setFocusedField(null)}
-              className="w-full px-6 py-4 rounded-lg transition-all outline-none border"
+              className="w-full px-4 sm:px-6 py-3.5 sm:py-4 rounded-lg transition-all outline-none border"
               style={{
                 background: "var(--input-background)",
                 borderColor: focusedField === "email" ? "var(--primary)" : "var(--border)",
@@ -153,7 +153,7 @@ export function ContactForm() {
               onFocus={() => setFocusedField("message")}
               onBlur={() => setFocusedField(null)}
               rows={4}
-              className="w-full px-6 py-4 rounded-lg transition-all outline-none resize-none border"
+              className="w-full px-4 sm:px-6 py-3.5 sm:py-4 rounded-lg transition-all outline-none resize-none border"
               style={{
                 background: "var(--input-background)",
                 borderColor: focusedField === "message" ? "var(--primary)" : "var(--border)",
@@ -165,11 +165,11 @@ export function ContactForm() {
             />
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <motion.button
               type="submit"
               disabled={status === "loading"}
-              className="flex-1 px-8 py-4 rounded-lg font-semibold flex items-center justify-center gap-3 transition-all bg-[var(--primary)] text-[var(--primary-foreground)] disabled:opacity-70"
+              className="flex-1 px-5 sm:px-8 py-3.5 sm:py-4 rounded-lg text-sm sm:text-base font-semibold flex items-center justify-center gap-2 sm:gap-3 transition-all bg-[var(--primary)] text-[var(--primary-foreground)] disabled:opacity-70"
               style={{ boxShadow: "var(--shadow-glow)" }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}

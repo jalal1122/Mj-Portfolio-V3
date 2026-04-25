@@ -99,7 +99,7 @@ function buildLanguages(repos: GitHubRepo[]) {
 }
 
 export async function getGitHubMetrics(): Promise<GitHubMetrics> {
-  const username = process.env.GITHUB_USERNAME || process.env.NEXT_PUBLIC_GITHUB_USERNAME || "octocat";
+  const username = process.env.GITHUB_USERNAME || "octocat";
   const token = process.env.GITHUB_TOKEN;
   const headers: HeadersInit = {
     Accept: "application/vnd.github+json",
