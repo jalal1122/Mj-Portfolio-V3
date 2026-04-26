@@ -2,8 +2,8 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import { GraduationCap, Briefcase, Rocket, Users } from "lucide-react";
-import { SpotlightCard } from "@/components/ui/spotlight-card";
+import { Briefcase } from "lucide-react";
+import { JourneyTimelineItem } from "@/components/journey/journey-timeline-item";
 
 export type ExperienceItem = {
   _id: string;
@@ -57,57 +57,15 @@ export function JourneyView({ experiences }: JourneyViewProps) {
 
           <div className="space-y-14 sm:space-y-24">
             {journeyNodes.map((node, index) => (
-              <motion.div
+              <JourneyTimelineItem
                 key={node.title}
-                className="relative pl-16 sm:pl-24"
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-              >
-                <motion.div
-                  className="absolute left-0 w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center"
-                  style={{
-                    background: `${node.color}20`,
-                    border: `2px solid ${node.color}`,
-                    boxShadow: `0px 0px 24px ${node.color}40`,
-                  }}
-                  whileHover={{ scale: 1.1, boxShadow: `0px 0px 32px ${node.color}60` }}
-                >
-                  <node.icon size={18} style={{ color: node.color }} />
-                </motion.div>
-
-                <SpotlightCard className="rounded-2xl p-4 sm:p-8" >
-                  <div className="relative z-10">
-                    <h3 className="mb-4" style={{ color: node.color }}>
-                      {node.title}
-                    </h3>
-                    {"timeframe" in node && node.timeframe ? (
-                      <p className="mb-4 text-sm uppercase tracking-[0.12em]" style={{ color: "color-mix(in srgb, var(--foreground) 60%, transparent)" }}>
-                        {node.timeframe}
-                      </p>
-                    ) : null}
-                    <p className="mb-6 text-base sm:text-lg" style={{ color: "var(--text-secondary)" }}>
-                      {node.content}
-                    </p>
-
-                    {"businesses" in node && node.businesses ? (
-                      <div className="grid sm:grid-cols-2 gap-4 mt-6">
-                        {node.businesses.map((business) => (
-                          <SpotlightCard
-                            key={business.name}
-                            className="p-6 rounded-xl backdrop-blur-md"
-                            style={{ background: "var(--glass-bg)", borderColor: `${node.color}40` }}
-                          >
-                            <h4 className="mb-2 text-[var(--foreground)] text-xl">{business.name}</h4>
-                            <p style={{ fontSize: "15px", color: "var(--text-secondary)" }}>{business.description}</p>
-                          </SpotlightCard>
-                        ))}
-                      </div>
-                    ) : null}
-                  </div>
-                </SpotlightCard>
-              </motion.div>
+                icon={node.icon}
+                title={node.title}
+                content={node.content}
+                timeframe={"timeframe" in node ? node.timeframe : undefined}
+                color={node.color}
+                index={index}
+              />
             ))}
           </div>
         </div>

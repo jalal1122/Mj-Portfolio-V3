@@ -8,7 +8,7 @@ const LEGACY_TECH_SVG_PLACEHOLDER = "https://placeholder.invalid/tech.svg";
 export async function GET() {
   try {
     await dbConnect();
-    const technologies = await Technology.find().sort({ createdAt: -1 }).lean();
+    const technologies = await Technology.find().sort({ displayOrder: 1, createdAt: -1 }).lean();
     return NextResponse.json({ success: true, data: technologies });
   } catch {
     return jsonError("Unable to fetch technologies.", 500);

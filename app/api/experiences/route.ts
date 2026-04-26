@@ -6,7 +6,7 @@ import { isMutationAllowed, jsonError } from "@/lib/api-helpers";
 export async function GET() {
   try {
     await dbConnect();
-    const experiences = await Experience.find().sort({ createdAt: -1 }).lean();
+    const experiences = await Experience.find().sort({ displayOrder: 1, createdAt: -1 }).lean();
     return NextResponse.json({ success: true, data: experiences });
   } catch {
     return jsonError("Unable to fetch experiences.", 500);

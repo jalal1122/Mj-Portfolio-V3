@@ -6,7 +6,7 @@ import { isMutationAllowed, jsonError } from "@/lib/api-helpers";
 export async function GET() {
   try {
     await dbConnect();
-    const projects = await Project.find().populate("techStack").sort({ createdAt: -1 }).lean();
+    const projects = await Project.find().populate("techStack").sort({ displayOrder: 1, createdAt: -1 }).lean();
     return NextResponse.json({ success: true, data: projects });
   } catch {
     return jsonError("Unable to fetch projects.", 500);
