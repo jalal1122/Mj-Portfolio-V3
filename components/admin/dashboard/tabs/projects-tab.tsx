@@ -1,8 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Plus, Trash2, Upload } from "lucide-react";
-import type { Dispatch, SetStateAction } from "react";
+import { Plus, Trash2, Upload, ArrowDown, ArrowUp } from "lucide-react";
+import { useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import { CollapsibleSectionCard, SearchField } from "@/components/admin/dashboard/admin-ui";
 import type { CloudinaryResult, ProjectEntity, ProjectFormState, TechnologyEntity } from "@/components/admin/dashboard/types";
 
@@ -25,7 +25,11 @@ type ProjectsTabProps = {
   onSave: () => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   onUpdateOrder: (id: string, displayOrder: number) => Promise<void>;
-  setStatus: (value: string) => void;
+  onQuickUpdate: (id: string, body: Partial<ProjectEntity>) => Promise<void>;
+  onBulkDelete: (ids: string[]) => Promise<void>;
+  onBulkReorder: (ids: string[], direction: "up" | "down") => Promise<void>;
+  onReorderByDrag: (draggedId: string, targetId: string) => Promise<void>;
+  setStatus: (value: string, tone?: "success" | "error" | "info") => void;
   resetForm: () => void;
 };
 
@@ -46,9 +50,43 @@ export function ProjectsTab({
   onSave,
   onDelete,
   onUpdateOrder,
+  onQuickUpdate,
+  onBulkDelete,
+  onBulkReorder,
+  onReorderByDrag,
   setStatus,
   resetForm,
 }: ProjectsTabProps) {
+  const [saving, setSaving] = useState(false);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [inlineEditingId, setInlineEditingId] = useState<string | null>(null);
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+  const hasMinimumFields = projectForm.title.trim() && projectForm.slug.trim() && projectForm.description.trim();
+  const allSelected = useMemo(
+    () => filteredProjects.length > 0 && filteredProjects.every((project) => selected.includes(project._id)),
+    [filteredProjects, selected],
+  );
+
+  const toggleSelected = (id: string) => {
+    setSelected((state) => (state.includes(id) ? state.filter((item) => item !== id) : [...state, id]));
+  };
+
+  const selectAll = () => {
+    setSelected(allSelected ? [] : filteredProjects.map((project) => project._id));
+  };
+
+  const runSave = async () => {
+    setSaving(true);
+    try {
+      await onSave();
+      setStatus(editingProjectId ? "Project updated." : "Project created.", "success");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Unable to save project.", "error");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <CollapsibleSectionCard title="Project Form" isOpen={panelOpen.projectForm} onToggle={() => onTogglePanel("projectForm")}>
@@ -57,6 +95,7 @@ export function ProjectsTab({
           <input className="w-full rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2" placeholder="Slug" value={projectForm.slug} onChange={(event) => setProjectForm((state) => ({ ...state, slug: event.target.value }))} />
         </div>
         <textarea className="w-full rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2" placeholder="Description" value={projectForm.description} onChange={(event) => setProjectForm((state) => ({ ...state, description: event.target.value }))} />
+        {!hasMinimumFields ? <p className="text-xs text-amber-400">Title, slug, and description are required before saving.</p> : null}
         <div className="grid sm:grid-cols-[1fr_auto] gap-2">
           <input className="w-full rounded-xl border border-[var(--card-border)] bg-transparent px-3 py-2" placeholder="Cloudinary image URL" value={projectForm.cloudinaryImageUrl} onChange={(event) => setProjectForm((state) => ({ ...state, cloudinaryImageUrl: event.target.value }))} />
           <CldUploadWidget
@@ -105,15 +144,12 @@ export function ProjectsTab({
 
         <div className="flex flex-wrap gap-2">
           <button
-            onClick={() =>
-              onSave()
-                .then(() => setStatus(editingProjectId ? "Project updated." : "Project created."))
-                .catch((error: unknown) => setStatus(error instanceof Error ? error.message : "Unable to save project."))
-            }
-            className="inline-flex items-center gap-2 rounded-full bg-[var(--primary)] text-white px-4 py-2 text-sm"
+            onClick={() => void runSave()}
+            disabled={saving || !hasMinimumFields}
+            className="inline-flex items-center gap-2 rounded-full bg-[var(--primary)] text-white px-4 py-2 text-sm disabled:opacity-60"
           >
             <Plus className="h-4 w-4" />
-            {editingProjectId ? "Update Project" : "Add Project"}
+            {saving ? "Saving..." : editingProjectId ? "Update Project" : "Add Project"}
           </button>
           {editingProjectId ? (
             <button
@@ -141,11 +177,71 @@ export function ProjectsTab({
             ))}
           </select>
         </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="inline-flex items-center gap-2 text-sm">
+            <input type="checkbox" checked={allSelected} onChange={selectAll} />
+            Select all
+          </label>
+          <button
+            type="button"
+            onClick={() => void onBulkDelete(selected).then(() => setSelected([]))}
+            disabled={!selected.length}
+            className="rounded-full border border-[var(--card-border)] px-3 py-1.5 text-xs disabled:opacity-50"
+          >
+            Bulk delete
+          </button>
+          <button
+            type="button"
+            onClick={() => void onBulkReorder(selected, "up")}
+            disabled={!selected.length}
+            className="rounded-full border border-[var(--card-border)] px-3 py-1.5 text-xs disabled:opacity-50 inline-flex items-center gap-1"
+          >
+            <ArrowUp className="h-3.5 w-3.5" />
+            Bulk up
+          </button>
+          <button
+            type="button"
+            onClick={() => void onBulkReorder(selected, "down")}
+            disabled={!selected.length}
+            className="rounded-full border border-[var(--card-border)] px-3 py-1.5 text-xs disabled:opacity-50 inline-flex items-center gap-1"
+          >
+            <ArrowDown className="h-3.5 w-3.5" />
+            Bulk down
+          </button>
+        </div>
         <div className="space-y-2 max-h-[420px] overflow-auto pr-1">
           {filteredProjects.map((project) => (
-            <div key={project._id} className="rounded-lg border border-[var(--card-border)] px-3 py-2 space-y-2">
+            <div
+              key={project._id}
+              draggable
+              onDragStart={() => setDraggingId(project._id)}
+              onDragOver={(event) => event.preventDefault()}
+              onDrop={() => {
+                if (!draggingId || draggingId === project._id) return;
+                void onReorderByDrag(draggingId, project._id).catch((error: unknown) =>
+                  setStatus(error instanceof Error ? error.message : "Unable to reorder by drag and drop.", "error"),
+                );
+                setDraggingId(null);
+              }}
+              className="rounded-lg border border-[var(--card-border)] px-3 py-2 space-y-2 cursor-grab"
+            >
               <div className="flex items-center justify-between gap-2">
-                <span className="text-sm truncate max-w-[240px]">{project.title}</span>
+                <div className="flex items-center gap-2 min-w-0">
+                  <input type="checkbox" checked={selected.includes(project._id)} onChange={() => toggleSelected(project._id)} />
+                  {inlineEditingId === project._id ? (
+                    <input
+                      className="text-sm rounded-lg border border-[var(--card-border)] bg-transparent px-2 py-1 min-w-[170px]"
+                      defaultValue={project.title}
+                      onBlur={(event) =>
+                        onQuickUpdate(project._id, { title: event.currentTarget.value })
+                          .then(() => setStatus("Project title updated.", "success"))
+                          .catch((error: unknown) => setStatus(error instanceof Error ? error.message : "Inline update failed.", "error"))
+                      }
+                    />
+                  ) : (
+                    <span className="text-sm truncate max-w-[240px]">{project.title}</span>
+                  )}
+                </div>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => {
@@ -168,11 +264,14 @@ export function ProjectsTab({
                   <button
                     onClick={() =>
                       onDelete(project._id)
-                        .then(() => setStatus("Project deleted."))
-                        .catch((error: unknown) => setStatus(error instanceof Error ? error.message : "Delete failed."))
+                        .then(() => setStatus("Project deleted.", "success"))
+                        .catch((error: unknown) => setStatus(error instanceof Error ? error.message : "Delete failed.", "error"))
                     }
                   >
                     <Trash2 className="h-4 w-4 text-red-400" />
+                  </button>
+                  <button type="button" className="text-xs text-[var(--primary)]" onClick={() => setInlineEditingId((state) => (state === project._id ? null : project._id))}>
+                    Quick Edit
                   </button>
                 </div>
               </div>
@@ -185,15 +284,18 @@ export function ProjectsTab({
                   onBlur={(event) => {
                     const nextValue = Number(event.currentTarget.value) || 0;
                     if (nextValue !== (project.displayOrder ?? 0)) {
-                      onUpdateOrder(project._id, nextValue).catch((error: unknown) => setStatus(error instanceof Error ? error.message : "Unable to update order."));
+                      onUpdateOrder(project._id, nextValue).catch((error: unknown) => setStatus(error instanceof Error ? error.message : "Unable to update order.", "error"));
                     }
                   }}
                 />
                 <span className="text-xs text-[var(--text-secondary)] self-center">Display order</span>
               </div>
+              <p className="text-[11px] text-[var(--text-secondary)]">
+                Updated: {project.updatedAt ? new Date(project.updatedAt).toLocaleString() : "N/A"} | Changed by: {project.changedBy || "You"}
+              </p>
             </div>
           ))}
-          {!filteredProjects.length ? <p className="text-sm text-[var(--text-secondary)]">No projects match current search/filter.</p> : null}
+          {!filteredProjects.length ? <p className="text-sm text-[var(--text-secondary)]">No projects yet - add your flagship build.</p> : null}
         </div>
       </CollapsibleSectionCard>
     </div>

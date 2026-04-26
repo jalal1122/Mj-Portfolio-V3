@@ -7,9 +7,11 @@ import type { TabItem, TabKey } from "./types";
 
 type DashboardHeaderCardProps = {
   onRefresh: () => void;
+  isRefreshing?: boolean;
+  lastSavedAt?: string | null;
 };
 
-export function DashboardHeaderCard({ onRefresh }: DashboardHeaderCardProps) {
+export function DashboardHeaderCard({ onRefresh, isRefreshing = false, lastSavedAt = null }: DashboardHeaderCardProps) {
   return (
     <SpotlightCard className="p-5">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -19,9 +21,12 @@ export function DashboardHeaderCard({ onRefresh }: DashboardHeaderCardProps) {
             <LayoutDashboard className="h-5 w-5 text-[var(--primary)]" />
             Portfolio Control Center
           </h1>
+          <p className="mt-2 text-xs text-[var(--text-secondary)]">
+            {lastSavedAt ? `Last saved at ${lastSavedAt}` : "No saved actions yet."}
+          </p>
         </div>
-        <button type="button" onClick={onRefresh} className="rounded-xl border border-[var(--card-border)] px-3 py-2 text-sm">
-          Refresh Data
+        <button type="button" onClick={onRefresh} className="rounded-xl border border-[var(--card-border)] px-3 py-2 text-sm" disabled={isRefreshing}>
+          {isRefreshing ? "Refreshing..." : "Refresh Data"}
         </button>
       </div>
     </SpotlightCard>
@@ -127,6 +132,26 @@ export function ColorSwatches({ colors, value, onSelect }: ColorSwatchesProps) {
       <button type="button" onClick={() => onSelect("")} className={`h-7 rounded-md border px-2 text-xs ${value ? "border-white/20" : "border-white"}`}>
         None
       </button>
+    </div>
+  );
+}
+
+type InlineToastProps = {
+  message: string;
+  tone?: "success" | "error" | "info";
+};
+
+export function InlineToast({ message, tone = "info" }: InlineToastProps) {
+  const colorClass =
+    tone === "success"
+      ? "border-emerald-500/30 text-emerald-300"
+      : tone === "error"
+        ? "border-red-500/30 text-red-300"
+        : "border-[var(--card-border)] text-[var(--text-secondary)]";
+
+  return (
+    <div className={`rounded-xl border px-3 py-2 text-sm ${colorClass}`}>
+      {message}
     </div>
   );
 }

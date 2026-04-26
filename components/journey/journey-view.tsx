@@ -2,7 +2,7 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import { Briefcase } from "lucide-react";
+import { Briefcase, GraduationCap } from "lucide-react";
 import { JourneyTimelineItem } from "@/components/journey/journey-timeline-item";
 
 export type ExperienceItem = {
@@ -36,8 +36,28 @@ export function JourneyView({ experiences }: JourneyViewProps) {
     color: experience.color || experiencePalette[index % experiencePalette.length],
   }));
 
-  const journeyNodes = [
-    ...experienceNodes,
+  const learningNodes = [
+    {
+      icon: GraduationCap,
+      title: "BSIT - Agriculture University Peshawar",
+      content: "Strengthened software fundamentals, systems thinking, and practical product development mindset.",
+      timeframe: "Academic Foundation",
+      color: "#8B5CF6",
+    },
+    {
+      icon: GraduationCap,
+      title: "Advanced MERN + Next.js Practice",
+      content: "Built full-stack portfolio projects focusing on scalable APIs, polished UI systems, and production deployment.",
+      timeframe: "Continuous Learning",
+      color: "#10B981",
+    },
+    {
+      icon: GraduationCap,
+      title: "AI Product Integration Track",
+      content: "Hands-on implementation of AI-assisted workflows, automation patterns, and prompt-driven features for web apps.",
+      timeframe: "Current Focus",
+      color: "#D946EF",
+    },
   ];
 
   return (
@@ -50,23 +70,45 @@ export function JourneyView({ experiences }: JourneyViewProps) {
           </p>
         </motion.div>
 
-        <div className="relative">
-          <div className="absolute left-4 sm:left-6 top-0 bottom-0 w-[2px] bg-[var(--muted)]">
-            <motion.div className="w-full origin-top" style={{ height: lineHeight, background: "linear-gradient(to bottom, #6366F1, #10B981)" }} />
+        <div className="grid lg:grid-cols-2 gap-10">
+          <div className="relative">
+            <p className="mb-6 text-xs uppercase tracking-[0.16em] text-[var(--text-secondary)]">Professional Experience</p>
+            <div className="absolute left-4 sm:left-6 top-10 bottom-0 w-[2px] bg-[var(--muted)]">
+              <motion.div className="w-full origin-top" style={{ height: lineHeight, background: "linear-gradient(to bottom, #6366F1, #10B981)" }} />
+            </div>
+            <div className="space-y-14 sm:space-y-24">
+              {experienceNodes.map((node, index) => (
+                <JourneyTimelineItem
+                  key={node.title}
+                  icon={node.icon}
+                  title={node.title}
+                  content={node.content}
+                  timeframe={"timeframe" in node ? node.timeframe : undefined}
+                  color={node.color}
+                  index={index}
+                />
+              ))}
+            </div>
           </div>
 
-          <div className="space-y-14 sm:space-y-24">
-            {journeyNodes.map((node, index) => (
-              <JourneyTimelineItem
-                key={node.title}
-                icon={node.icon}
-                title={node.title}
-                content={node.content}
-                timeframe={"timeframe" in node ? node.timeframe : undefined}
-                color={node.color}
-                index={index}
-              />
-            ))}
+          <div className="relative">
+            <p className="mb-6 text-xs uppercase tracking-[0.16em] text-[var(--text-secondary)]">Learning Milestones</p>
+            <div className="absolute left-4 sm:left-6 top-10 bottom-0 w-[2px] bg-[var(--muted)]">
+              <motion.div className="w-full origin-top" style={{ height: lineHeight, background: "linear-gradient(to bottom, #8B5CF6, #D946EF)" }} />
+            </div>
+            <div className="space-y-14 sm:space-y-24">
+              {learningNodes.map((node, index) => (
+                <JourneyTimelineItem
+                  key={node.title}
+                  icon={node.icon}
+                  title={node.title}
+                  content={node.content}
+                  timeframe={node.timeframe}
+                  color={node.color}
+                  index={index}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>

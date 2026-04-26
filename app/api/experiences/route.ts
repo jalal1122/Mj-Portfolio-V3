@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Experience from "@/models/Experience";
-import { isMutationAllowed, jsonError } from "@/lib/api-helpers";
+import { getMutationActor, isMutationAllowed, jsonError } from "@/lib/api-helpers";
 
 export async function GET() {
   try {
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
   try {
     await dbConnect();
     const body = await request.json();
-    const created = await Experience.create(body);
+    const created = await Experience.create({ ...body, changedBy: getMutationActor(request) });
     return NextResponse.json({ success: true, data: created }, { status: 201 });
   } catch {
     return jsonError("Unable to create experience.", 500);

@@ -7,6 +7,7 @@ const TechnologySchema = new mongoose.Schema(
     cloudinarySvgUrl: { type: String, default: "", trim: true },
     color: { type: String, default: "", trim: true },
     displayOrder: { type: Number, default: 0, min: 0 },
+    changedBy: { type: String, default: "Portfolio Admin", trim: true },
   },
   { timestamps: true },
 );

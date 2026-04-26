@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Technology from "@/models/Technology";
-import { isMutationAllowed, jsonError } from "@/lib/api-helpers";
+import { getMutationActor, isMutationAllowed, jsonError } from "@/lib/api-helpers";
 
 type Params = { params: Promise<{ id: string }> };
 const LEGACY_TECH_SVG_PLACEHOLDER = "https://placeholder.invalid/tech.svg";
@@ -19,6 +19,7 @@ export async function PATCH(request: Request, { params }: Params) {
       ...body,
       cloudinarySvgUrl: body.cloudinarySvgUrl || LEGACY_TECH_SVG_PLACEHOLDER,
       color: body.color ?? "",
+      changedBy: getMutationActor(request),
     }, {
       new: true,
       runValidators: true,

@@ -1,7 +1,7 @@
 "use client";
 
-import { Plus, Trash2 } from "lucide-react";
-import type { Dispatch, SetStateAction } from "react";
+import { Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
+import { useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import { CollapsibleSectionCard, ColorSwatches, SearchField } from "@/components/admin/dashboard/admin-ui";
 import type { TechnologyEntity, TechnologyFormState } from "@/components/admin/dashboard/types";
 
@@ -22,7 +22,11 @@ type TechnologiesTabProps = {
   onSave: () => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   onUpdateOrder: (id: string, displayOrder: number) => Promise<void>;
-  setStatus: (value: string) => void;
+  onQuickUpdate: (id: string, body: Partial<TechnologyEntity>) => Promise<void>;
+  onBulkDelete: (ids: string[]) => Promise<void>;
+  onBulkReorder: (ids: string[], direction: "up" | "down") => Promise<void>;
+  onReorderByDrag: (draggedId: string, targetId: string) => Promise<void>;
+  setStatus: (value: string, tone?: "success" | "error" | "info") => void;
   resetForm: () => void;
 };
 
@@ -43,9 +47,34 @@ export function TechnologiesTab({
   onSave,
   onDelete,
   onUpdateOrder,
+  onQuickUpdate,
+  onBulkDelete,
+  onBulkReorder,
+  onReorderByDrag,
   setStatus,
   resetForm,
 }: TechnologiesTabProps) {
+  const [saving, setSaving] = useState(false);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+  const hasMinimumFields = technologyForm.name.trim() && technologyForm.category.trim();
+  const allSelected = useMemo(
+    () => filteredTechnologies.length > 0 && filteredTechnologies.every((item) => selected.includes(item._id)),
+    [filteredTechnologies, selected],
+  );
+
+  const runSave = async () => {
+    setSaving(true);
+    try {
+      await onSave();
+      setStatus(editingTechnologyId ? "Technology updated." : "Technology created.", "success");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Unable to save technology.", "error");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <CollapsibleSectionCard title="Technology Form" isOpen={panelOpen.technologyForm} onToggle={() => onTogglePanel("technologyForm")}>
@@ -61,21 +90,19 @@ export function TechnologiesTab({
           value={technologyForm.displayOrder}
           onChange={(event) => setTechnologyForm((state) => ({ ...state, displayOrder: Number(event.target.value) || 0 }))}
         />
+        {!hasMinimumFields ? <p className="text-xs text-amber-400">Technology name and category are required.</p> : null}
         <div className="space-y-2">
           <p className="text-sm font-medium">Technology Color</p>
           <ColorSwatches colors={colorPresets} value={technologyForm.color} onSelect={(color) => setTechnologyForm((state) => ({ ...state, color }))} />
         </div>
         <div className="flex flex-wrap gap-2">
           <button
-            onClick={() =>
-              onSave()
-                .then(() => setStatus(editingTechnologyId ? "Technology updated." : "Technology created."))
-                .catch((error: unknown) => setStatus(error instanceof Error ? error.message : "Unable to save technology."))
-            }
-            className="inline-flex items-center gap-2 rounded-full bg-[var(--primary)] text-white px-4 py-2 text-sm"
+            onClick={() => void runSave()}
+            disabled={saving || !hasMinimumFields}
+            className="inline-flex items-center gap-2 rounded-full bg-[var(--primary)] text-white px-4 py-2 text-sm disabled:opacity-60"
           >
             <Plus className="h-4 w-4" />
-            {editingTechnologyId ? "Update Technology" : "Add Technology"}
+            {saving ? "Saving..." : editingTechnologyId ? "Update Technology" : "Add Technology"}
           </button>
           {editingTechnologyId ? (
             <button
@@ -103,16 +130,60 @@ export function TechnologiesTab({
             ))}
           </select>
         </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="inline-flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={allSelected}
+              onChange={() => setSelected(allSelected ? [] : filteredTechnologies.map((item) => item._id))}
+            />
+            Select all
+          </label>
+          <button type="button" onClick={() => void onBulkDelete(selected).then(() => setSelected([]))} disabled={!selected.length} className="rounded-full border border-[var(--card-border)] px-3 py-1.5 text-xs disabled:opacity-50">Bulk delete</button>
+          <button type="button" onClick={() => void onBulkReorder(selected, "up")} disabled={!selected.length} className="rounded-full border border-[var(--card-border)] px-3 py-1.5 text-xs disabled:opacity-50 inline-flex items-center gap-1"><ArrowUp className="h-3.5 w-3.5" />Bulk up</button>
+          <button type="button" onClick={() => void onBulkReorder(selected, "down")} disabled={!selected.length} className="rounded-full border border-[var(--card-border)] px-3 py-1.5 text-xs disabled:opacity-50 inline-flex items-center gap-1"><ArrowDown className="h-3.5 w-3.5" />Bulk down</button>
+        </div>
         <div className="space-y-2 max-h-[420px] overflow-auto pr-1">
           {filteredTechnologies.map((technology) => (
-            <div key={technology._id} className="rounded-lg border border-[var(--card-border)] px-3 py-2 space-y-2">
+            <div
+              key={technology._id}
+              draggable
+              onDragStart={() => setDraggingId(technology._id)}
+              onDragOver={(event) => event.preventDefault()}
+              onDrop={() => {
+                if (!draggingId || draggingId === technology._id) return;
+                void onReorderByDrag(draggingId, technology._id).catch((error: unknown) =>
+                  setStatus(error instanceof Error ? error.message : "Unable to reorder by drag and drop.", "error"),
+                );
+                setDraggingId(null);
+              }}
+              className="rounded-lg border border-[var(--card-border)] px-3 py-2 space-y-2 cursor-grab"
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm flex items-center gap-2">
-                    {technology.name}
+                    <input type="checkbox" checked={selected.includes(technology._id)} onChange={() => setSelected((state) => (state.includes(technology._id) ? state.filter((id) => id !== technology._id) : [...state, technology._id]))} />
+                    <input
+                      defaultValue={technology.name}
+                      className="rounded-md border border-transparent bg-transparent px-1 py-0.5 text-sm focus:border-[var(--card-border)]"
+                      onBlur={(event) =>
+                        onQuickUpdate(technology._id, { name: event.currentTarget.value })
+                          .then(() => setStatus("Technology name updated.", "success"))
+                          .catch((error: unknown) => setStatus(error instanceof Error ? error.message : "Inline update failed.", "error"))
+                      }
+                    />
                     {technology.color ? <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: technology.color }} /> : null}
                   </p>
-                  <p className="text-xs text-[var(--text-secondary)]">{technology.category}</p>
+                  <input
+                    defaultValue={technology.category}
+                    className="mt-1 rounded-md border border-transparent bg-transparent px-1 py-0.5 text-xs text-[var(--text-secondary)] focus:border-[var(--card-border)]"
+                    onBlur={(event) => {
+                      const nextCategory = event.currentTarget.value;
+                      if (nextCategory !== technology.category) {
+                        onQuickUpdate(technology._id, { category: nextCategory }).catch((error: unknown) => setStatus(error instanceof Error ? error.message : "Category update failed.", "error"));
+                      }
+                    }}
+                  />
                 </div>
                 <div className="flex items-center gap-2">
                   <button
@@ -132,8 +203,8 @@ export function TechnologiesTab({
                   <button
                     onClick={() =>
                       onDelete(technology._id)
-                        .then(() => setStatus("Technology deleted."))
-                        .catch((error: unknown) => setStatus(error instanceof Error ? error.message : "Delete failed."))
+                        .then(() => setStatus("Technology deleted.", "success"))
+                        .catch((error: unknown) => setStatus(error instanceof Error ? error.message : "Delete failed.", "error"))
                     }
                   >
                     <Trash2 className="h-4 w-4 text-red-400" />
@@ -149,15 +220,16 @@ export function TechnologiesTab({
                   onBlur={(event) => {
                     const nextValue = Number(event.currentTarget.value) || 0;
                     if (nextValue !== (technology.displayOrder ?? 0)) {
-                      onUpdateOrder(technology._id, nextValue).catch((error: unknown) => setStatus(error instanceof Error ? error.message : "Unable to update order."));
+                      onUpdateOrder(technology._id, nextValue).catch((error: unknown) => setStatus(error instanceof Error ? error.message : "Unable to update order.", "error"));
                     }
                   }}
                 />
                 <span className="text-xs text-[var(--text-secondary)] self-center">Display order</span>
               </div>
+              <p className="text-[11px] text-[var(--text-secondary)]">Updated: {technology.updatedAt ? new Date(technology.updatedAt).toLocaleString() : "N/A"} | Changed by: {technology.changedBy || "You"}</p>
             </div>
           ))}
-          {!filteredTechnologies.length ? <p className="text-sm text-[var(--text-secondary)]">No technologies match current search/filter.</p> : null}
+          {!filteredTechnologies.length ? <p className="text-sm text-[var(--text-secondary)]">No tech yet - define your signature stack first.</p> : null}
         </div>
       </CollapsibleSectionCard>
     </div>

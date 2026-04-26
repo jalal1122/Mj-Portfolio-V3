@@ -6,7 +6,7 @@ export default function ContactPage() {
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-8 sm:gap-10 items-start">
         <div className="space-y-6 lg:sticky lg:top-28">
           <p className="sub-heading">Contact</p>
-          <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-[var(--foreground)]">Let's build something impactful together.</h1>
+          <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-[var(--foreground)]">Let&apos;s build something impactful together.</h1>
           <p className="text-[var(--text-secondary)] leading-relaxed">
             Whether you need a polished portfolio, a scalable web platform, or feature support for your existing app, I can help from planning to deployment.
           </p>

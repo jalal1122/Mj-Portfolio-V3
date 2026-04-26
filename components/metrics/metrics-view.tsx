@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import type { GitHubMetrics } from "@/lib/github";
-import { ContributionsCard, ImpactCard, LanguageBreakdownCard } from "@/components/metrics/metrics-sections";
+import { ContributionsCard, ImpactCard, LanguageBreakdownCard, RoleSkillMapCard } from "@/components/metrics/metrics-sections";
 
 type MetricsViewProps = {
   metrics: GitHubMetrics;
@@ -40,6 +40,7 @@ export function MetricsView({ metrics }: MetricsViewProps) {
             <LanguageBreakdownCard languageData={languageData} />
             <ImpactCard impact={metrics.impact} />
           </div>
+          <RoleSkillMapCard />
         </div>
       </div>
     </div>

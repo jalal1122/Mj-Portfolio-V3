@@ -5,7 +5,6 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { CustomCursor } from "@/components/ui/custom-cursor";
-import { AuroraBackground } from "@/components/ui/aurora-background";
 import { FloatingShapes } from "@/components/ui/floating-shapes";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -26,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${plusJakarta.variable} h-full antialiased`}>
       <body suppressHydrationWarning className="min-h-full bg-background">
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+        <ThemeProvider>
           {/* <AuroraBackground /> */}
           <FloatingShapes />
           <CustomCursor />

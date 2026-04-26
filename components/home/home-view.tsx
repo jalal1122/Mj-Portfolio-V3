@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import {
   Activity,
   Code2,
@@ -10,6 +9,7 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 import {
+  BuildStackDNASection,
   CoreTechnologiesSection,
   HeroSection,
   TestimonialsSection,
@@ -77,7 +77,8 @@ export function HomeView({ projects, technologies, homeContent }: HomeViewProps)
 
   return (
     <div className="relative sm:-mt-24 sm:min-h-screen">
-      <HeroSection heroImageSrc={heroImageSrc} />
+      <HeroSection heroImageSrc={heroImageSrc} projectCount={projects.length || 12} responseTimeLabel="under 24 hours" />
+      <BuildStackDNASection />
       <CoreTechnologiesSection techStack={techStack} />
       <TrustedCompaniesSection trustLoop={trustLoop} trustLoopForward={trustLoopForward} trustLoopReverse={trustLoopReverse} />
       <TestimonialsSection

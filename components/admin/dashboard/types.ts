@@ -18,6 +18,8 @@ export type TechnologyEntity = {
   category: string;
   color?: string;
   displayOrder?: number;
+  updatedAt?: string;
+  changedBy?: string;
 };
 
 export type TechRef = string | TechnologyEntity;
@@ -32,6 +34,8 @@ export type ProjectEntity = {
   githubLink?: string;
   liveLink?: string;
   displayOrder?: number;
+  updatedAt?: string;
+  changedBy?: string;
 };
 
 export type ExperienceEntity = {
@@ -42,6 +46,8 @@ export type ExperienceEntity = {
   description: string;
   color?: string;
   displayOrder?: number;
+  updatedAt?: string;
+  changedBy?: string;
 };
 
 export type ProjectFormState = {

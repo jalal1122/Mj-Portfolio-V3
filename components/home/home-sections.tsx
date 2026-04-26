@@ -1,16 +1,21 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Code2, Quote, ShieldCheck, Star, type LucideIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { SpotlightCard } from "@/components/ui/spotlight-card";
+import { TechMarquee } from "@/components/ui/tech-marquee";
 
 type HeroSectionProps = {
   heroImageSrc: string;
+  projectCount: number;
+  responseTimeLabel: string;
 };
 
-export function HeroSection({ heroImageSrc }: HeroSectionProps) {
+export function HeroSection({ heroImageSrc, projectCount, responseTimeLabel }: HeroSectionProps) {
+  const reduceMotion = useReducedMotion();
+
   return (
     <section className="relative sm:h-screen flex items-center justify-center overflow-hidden pt-8 sm:pt-0">
       <div className="absolute inset-0 opacity-30" />
@@ -36,6 +41,17 @@ export function HeroSection({ heroImageSrc }: HeroSectionProps) {
           <motion.p className="mb-12 max-w-xl" style={{ color: "var(--text-secondary)" }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
             Junior Developer &amp; AI Enthusiast specializing in the MERN stack and Next.js.
           </motion.p>
+          <motion.p className="mb-6 max-w-2xl text-base sm:text-lg" style={{ color: "var(--foreground)" }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.56 }}>
+            I deliver conversion-focused web products that feel premium, perform fast, and scale with your business.
+          </motion.p>
+          <motion.div className="mb-8 flex flex-wrap gap-3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.62 }}>
+            <span className="rounded-full border border-[var(--card-border)] bg-[var(--glass-bg)] px-4 py-2 text-xs font-semibold tracking-wide">
+              {projectCount}+ production-ready builds
+            </span>
+            <span className="rounded-full border border-[var(--card-border)] bg-[var(--glass-bg)] px-4 py-2 text-xs font-semibold tracking-wide">
+              Typical response: {responseTimeLabel}
+            </span>
+          </motion.div>
 
           <motion.div
             className="mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-6 w-full sm:w-auto"
@@ -93,8 +109,8 @@ export function HeroSection({ heroImageSrc }: HeroSectionProps) {
           <motion.div
             className="absolute inset-0 opacity-30 pointer-events-none z-0"
             style={{ background: "radial-gradient(circle at 50% 50%, var(--primary) 0%, transparent 60%)" }}
-            animate={{ scale: [1, 1.3, 1], opacity: [0.15, 0.3, 0.15] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            animate={reduceMotion ? undefined : { scale: [1, 1.3, 1], opacity: [0.15, 0.3, 0.15] }}
+            transition={reduceMotion ? undefined : { duration: 4, repeat: Infinity, ease: "easeInOut" }}
           />
         </motion.div>
       </div>
@@ -107,6 +123,8 @@ type CoreTechnologiesSectionProps = {
 };
 
 export function CoreTechnologiesSection({ techStack }: CoreTechnologiesSectionProps) {
+  const reduceMotion = useReducedMotion();
+
   return (
     <section id="metrics" className="py-24 px-6">
       <div className="max-w-7xl mx-auto">
@@ -117,7 +135,11 @@ export function CoreTechnologiesSection({ techStack }: CoreTechnologiesSectionPr
               <div className="relative overflow-hidden flex flex-col gap-4">
                 <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[var(--glass-bg)] to-transparent z-10 pointer-events-none" />
                 <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[var(--glass-bg)] to-transparent z-10 pointer-events-none" />
-                <motion.div className="flex gap-4 w-max" animate={{ x: ["0%", "-50%"] }} transition={{ duration: 30, repeat: Infinity, ease: "linear" }}>
+                <motion.div
+                  className="flex gap-4 w-max"
+                  animate={reduceMotion ? undefined : { x: ["0%", "-50%"] }}
+                  transition={reduceMotion ? undefined : { duration: 30, repeat: Infinity, ease: "linear" }}
+                >
                   {[...techStack].map((tech, idx) => (
                     <div
                       key={`row1-${idx}`}
@@ -134,7 +156,11 @@ export function CoreTechnologiesSection({ techStack }: CoreTechnologiesSectionPr
                     </div>
                   ))}
                 </motion.div>
-                <motion.div className="flex gap-4 w-max" animate={{ x: ["-50%", "0%"] }} transition={{ duration: 25, repeat: Infinity, ease: "linear" }}>
+                <motion.div
+                  className="flex gap-4 w-max"
+                  animate={reduceMotion ? undefined : { x: ["-50%", "0%"] }}
+                  transition={reduceMotion ? undefined : { duration: 25, repeat: Infinity, ease: "linear" }}
+                >
                   {[...techStack].reverse().concat([...techStack].reverse()).map((tech, idx) => (
                     <div
                       key={`row2-${idx}`}
@@ -180,6 +206,30 @@ export function CoreTechnologiesSection({ techStack }: CoreTechnologiesSectionPr
   );
 }
 
+export function BuildStackDNASection() {
+  const preferredStacks = [
+    "Next.js + TypeScript + Tailwind",
+    "MERN APIs + RBAC + JWT",
+    "Framer Motion + Glassmorphism UI",
+    "MongoDB + Aggregations + Caching",
+    "AI features + prompt workflows + automations",
+  ];
+
+  return (
+    <section className="px-6 pb-2">
+      <div className="max-w-7xl mx-auto">
+        <SpotlightCard className="rounded-2xl p-4 sm:p-6 space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h3 className="text-base sm:text-lg font-semibold">Build Stack DNA</h3>
+            <p className="text-xs uppercase tracking-[0.16em] text-[var(--text-secondary)]">Preferred architecture combos</p>
+          </div>
+          <TechMarquee items={preferredStacks} />
+        </SpotlightCard>
+      </div>
+    </section>
+  );
+}
+
 type TrustCard = {
   name: string;
   color: string;
@@ -193,14 +243,16 @@ type TrustedCompaniesSectionProps = {
 };
 
 export function TrustedCompaniesSection({ trustLoop, trustLoopForward, trustLoopReverse }: TrustedCompaniesSectionProps) {
+  const reduceMotion = useReducedMotion();
+
   return (
     <section className="py-24 px-6 relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none overflow-hidden flex justify-center items-center opacity-40">
         <motion.div
           className="w-[600px] h-[600px] rounded-full blur-[120px] absolute"
           style={{ background: "radial-gradient(circle, var(--secondary) 0%, transparent 60%)" }}
-          animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          animate={reduceMotion ? undefined : { scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
+          transition={reduceMotion ? undefined : { duration: 10, repeat: Infinity, ease: "easeInOut" }}
         />
       </div>
       <div className="max-w-7xl mx-auto relative z-10">
@@ -220,7 +272,11 @@ export function TrustedCompaniesSection({ trustLoop, trustLoopForward, trustLoop
         <div className="relative hidden lg:flex overflow-hidden group py-4">
           <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[var(--background)] to-transparent z-10 pointer-events-none" />
           <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[var(--background)] to-transparent z-10 pointer-events-none" />
-          <motion.div className="flex gap-8 items-center w-max" animate={{ x: ["0%", "-50%"] }} transition={{ duration: 25, repeat: Infinity, ease: "linear" }}>
+          <motion.div
+            className="flex gap-8 items-center w-max"
+            animate={reduceMotion ? undefined : { x: ["0%", "-50%"] }}
+            transition={reduceMotion ? undefined : { duration: 25, repeat: Infinity, ease: "linear" }}
+          >
             {trustLoop.map((company, index) => {
               const Icon = company.icon;
               return (
@@ -239,7 +295,11 @@ export function TrustedCompaniesSection({ trustLoop, trustLoopForward, trustLoop
           <div className="absolute inset-y-0 left-0 w-14 sm:w-20 bg-gradient-to-r from-[var(--background)] to-transparent z-10 pointer-events-none" />
           <div className="absolute inset-y-0 right-0 w-14 sm:w-20 bg-gradient-to-l from-[var(--background)] to-transparent z-10 pointer-events-none" />
 
-          <motion.div className="flex gap-3 sm:gap-4 items-center w-max" animate={{ x: ["0%", "-50%"] }} transition={{ duration: 18, repeat: Infinity, ease: "linear" }}>
+          <motion.div
+            className="flex gap-3 sm:gap-4 items-center w-max"
+            animate={reduceMotion ? undefined : { x: ["0%", "-50%"] }}
+            transition={reduceMotion ? undefined : { duration: 18, repeat: Infinity, ease: "linear" }}
+          >
             {trustLoopForward.map((company, index) => {
               const Icon = company.icon;
               return (
@@ -253,7 +313,11 @@ export function TrustedCompaniesSection({ trustLoop, trustLoopForward, trustLoop
             })}
           </motion.div>
 
-          <motion.div className="flex gap-3 sm:gap-4 items-center w-max" animate={{ x: ["-50%", "0%"] }} transition={{ duration: 17, repeat: Infinity, ease: "linear" }}>
+          <motion.div
+            className="flex gap-3 sm:gap-4 items-center w-max"
+            animate={reduceMotion ? undefined : { x: ["-50%", "0%"] }}
+            transition={reduceMotion ? undefined : { duration: 17, repeat: Infinity, ease: "linear" }}
+          >
             {trustLoopReverse.map((company, index) => {
               const Icon = company.icon;
               return (
@@ -313,7 +377,7 @@ export function TestimonialsSection({ testimonials, expandedTestimonials, onTogg
                         }),
                   }}
                 >
-                  "{testimonial.text}"
+                  &quot;{testimonial.text}&quot;
                 </p>
                 {testimonial.text.length > 180 ? (
                   <button

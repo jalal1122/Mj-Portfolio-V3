@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Project from "@/models/Project";
-import { isMutationAllowed, jsonError } from "@/lib/api-helpers";
+import { getMutationActor, isMutationAllowed, jsonError } from "@/lib/api-helpers";
 
 export async function GET() {
   try {
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
   try {
     await dbConnect();
     const body = await request.json();
-    const created = await Project.create(body);
+    const created = await Project.create({ ...body, changedBy: getMutationActor(request) });
     const populated = await created.populate("techStack");
     return NextResponse.json({ success: true, data: populated }, { status: 201 });
   } catch {

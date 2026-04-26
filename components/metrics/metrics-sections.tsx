@@ -149,3 +149,47 @@ export function ImpactCard({ impact }: ImpactCardProps) {
     </motion.div>
   );
 }
+
+const skillClusters = [
+  { name: "Frontend", score: 88, color: "#6366F1", tools: ["Next.js", "React", "Tailwind"] },
+  { name: "Backend", score: 82, color: "#8B5CF6", tools: ["Node.js", "Express", "MongoDB"] },
+  { name: "DevOps", score: 70, color: "#10B981", tools: ["Vercel", "Cloudinary", "CI/CD"] },
+  { name: "AI", score: 76, color: "#D946EF", tools: ["Prompt Design", "API Integrations", "Automation"] },
+];
+
+export function RoleSkillMapCard() {
+  return (
+    <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.25 }}>
+      <SpotlightCard className="rounded-2xl p-4 sm:p-8">
+        <div className="relative z-10 space-y-6">
+          <div>
+            <h3 className="text-[var(--foreground)]">Role Skill Map</h3>
+            <p className="text-sm text-[var(--text-secondary)] mt-1">Capability clusters across delivery domains.</p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            {skillClusters.map((cluster) => (
+              <div key={cluster.name} className="rounded-xl border border-[var(--card-border)] p-4 space-y-3">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="font-semibold text-[var(--foreground)]">{cluster.name}</p>
+                  <p className="text-sm font-semibold" style={{ color: cluster.color }}>{cluster.score}%</p>
+                </div>
+                <div className="h-2 rounded-full bg-[color-mix(in_srgb,var(--card-border)_60%,transparent)] overflow-hidden">
+                  <motion.div
+                    className="h-full rounded-full"
+                    style={{ background: cluster.color }}
+                    initial={{ width: 0 }}
+                    whileInView={{ width: `${cluster.score}%` }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8 }}
+                  />
+                </div>
+                <p className="text-xs text-[var(--text-secondary)]">{cluster.tools.join(" • ")}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </SpotlightCard>
+    </motion.div>
+  );
+}

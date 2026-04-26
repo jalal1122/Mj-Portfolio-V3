@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Technology from "@/models/Technology";
-import { isMutationAllowed, jsonError } from "@/lib/api-helpers";
+import { getMutationActor, isMutationAllowed, jsonError } from "@/lib/api-helpers";
 
 const LEGACY_TECH_SVG_PLACEHOLDER = "https://placeholder.invalid/tech.svg";
 
@@ -27,6 +27,7 @@ export async function POST(request: Request) {
       ...body,
       cloudinarySvgUrl: body.cloudinarySvgUrl || LEGACY_TECH_SVG_PLACEHOLDER,
       color: body.color ?? "",
+      changedBy: getMutationActor(request),
     });
     return NextResponse.json({ success: true, data: created }, { status: 201 });
   } catch (error: unknown) {

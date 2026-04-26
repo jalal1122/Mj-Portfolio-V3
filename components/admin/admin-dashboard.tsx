@@ -2,7 +2,7 @@
 
 import { Briefcase, FolderKanban, Home, ShieldCheck, Wrench } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { DashboardHeaderCard, SidebarTabs } from "@/components/admin/dashboard/admin-ui";
+import { DashboardHeaderCard, InlineToast, SidebarTabs } from "@/components/admin/dashboard/admin-ui";
 import {
   colorPresets,
   defaultExperience,
@@ -63,7 +63,11 @@ export function AdminDashboard() {
   const [technologyForm, setTechnologyForm] = useState<TechnologyFormState>(defaultTechnology);
 
   const [adminToken, setAdminToken] = useState("");
+  const [adminActor, setAdminActor] = useState("Portfolio Admin");
   const [status, setStatus] = useState("");
+  const [statusTone, setStatusTone] = useState<"success" | "error" | "info">("info");
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>("home");
   const [editingProjectId, setEditingProjectId] = useState("");
   const [editingTechnologyId, setEditingTechnologyId] = useState("");
@@ -80,9 +84,15 @@ export function AdminDashboard() {
   const [trustedSearch, setTrustedSearch] = useState("");
   const [reviewSearch, setReviewSearch] = useState("");
 
-  const setStatusSafe = useCallback((value: string) => {
+  const setStatusWithTone = useCallback((value: string, tone: "success" | "error" | "info" = "info") => {
     if (!isMountedRef.current) return;
+    setStatusTone(tone);
     setStatus(value);
+  }, []);
+
+  const markSavedNow = useCallback(() => {
+    if (!isMountedRef.current) return;
+    setLastSavedAt(new Date().toLocaleTimeString());
   }, []);
 
   const tabItems: TabItem[] = [
@@ -96,6 +106,7 @@ export function AdminDashboard() {
   const getHeaders = () => {
     const baseHeaders: Record<string, string> = { "Content-Type": "application/json" };
     if (adminToken) baseHeaders["x-admin-token"] = adminToken;
+    baseHeaders["x-admin-user"] = adminActor.trim() || "Portfolio Admin";
     return baseHeaders;
   };
 
@@ -104,6 +115,7 @@ export function AdminDashboard() {
   };
 
   const refresh = async () => {
+    if (isMountedRef.current) setIsRefreshing(true);
     const [proj, tech, exp, home] = await Promise.all([
       fetchEntity<ProjectEntity[]>("projects"),
       fetchEntity<TechnologyEntity[]>("technologies"),
@@ -123,12 +135,16 @@ export function AdminDashboard() {
         testimonials: home.testimonials?.length ? home.testimonials : [{ text: "", name: "", role: "" }],
       });
     }
+    setIsRefreshing(false);
   };
 
   useEffect(() => {
     isMountedRef.current = true;
-    void refresh();
+    const timer = setTimeout(() => {
+      void refresh();
+    }, 0);
     return () => {
+      clearTimeout(timer);
       isMountedRef.current = false;
     };
   }, []);
@@ -147,6 +163,7 @@ export function AdminDashboard() {
     const response = await fetch(`/api/${route}/${id}`, { method: "DELETE", headers: getHeaders() });
     if (!response.ok) throw new Error(await getErrorMessage(response));
     await refresh();
+    markSavedNow();
   };
 
   const createProject = async () => {
@@ -159,6 +176,7 @@ export function AdminDashboard() {
     }
     setProjectForm(defaultProject);
     await refresh();
+    markSavedNow();
   };
 
   const createExperience = async () => {
@@ -171,6 +189,7 @@ export function AdminDashboard() {
     }
     setExperienceForm(defaultExperience);
     await refresh();
+    markSavedNow();
   };
 
   const createTechnology = async () => {
@@ -187,6 +206,7 @@ export function AdminDashboard() {
     }
     setTechnologyForm(defaultTechnology);
     await refresh();
+    markSavedNow();
   };
 
   const saveHomeContent = async () => {
@@ -198,6 +218,7 @@ export function AdminDashboard() {
     if (editingHomeContentId) await patchEntity("home-content", editingHomeContentId, payload);
     else await createEntity("home-content", payload);
     await refresh();
+    markSavedNow();
   };
 
   const toggleProjectTech = (techId: string) => {
@@ -210,16 +231,86 @@ export function AdminDashboard() {
   const updateProjectOrder = async (id: string, displayOrder: number) => {
     await patchEntity("projects", id, { displayOrder });
     await refresh();
+    markSavedNow();
   };
 
   const updateTechnologyOrder = async (id: string, displayOrder: number) => {
     await patchEntity("technologies", id, { displayOrder });
     await refresh();
+    markSavedNow();
   };
 
   const updateExperienceOrder = async (id: string, displayOrder: number) => {
     await patchEntity("experiences", id, { displayOrder });
     await refresh();
+    markSavedNow();
+  };
+
+  const quickUpdateProject = async (id: string, body: Partial<ProjectEntity>) => {
+    await patchEntity("projects", id, body as Record<string, unknown>);
+    await refresh();
+    markSavedNow();
+  };
+
+  const quickUpdateTechnology = async (id: string, body: Partial<TechnologyEntity>) => {
+    await patchEntity("technologies", id, body as Record<string, unknown>);
+    await refresh();
+    markSavedNow();
+  };
+
+  const quickUpdateExperience = async (id: string, body: Partial<ExperienceEntity>) => {
+    await patchEntity("experiences", id, body as Record<string, unknown>);
+    await refresh();
+    markSavedNow();
+  };
+
+  const bulkDelete = async (route: "projects" | "technologies" | "experiences", ids: string[]) => {
+    await Promise.all(ids.map((id) => deleteEntity(route, id)));
+    setStatusWithTone(`${ids.length} item(s) deleted.`, "success");
+  };
+
+  const bulkReorder = async (
+    route: "projects" | "technologies" | "experiences",
+    ids: string[],
+    currentItems: Array<{ _id: string; displayOrder?: number }>,
+    direction: "up" | "down",
+  ) => {
+    await Promise.all(
+      ids.map((id) => {
+        const item = currentItems.find((entry) => entry._id === id);
+        const currentOrder = item?.displayOrder ?? 0;
+        const nextOrder = direction === "up" ? Math.max(0, currentOrder - 1) : currentOrder + 1;
+        return patchEntity(route, id, { displayOrder: nextOrder });
+      }),
+    );
+    await refresh();
+    markSavedNow();
+    setStatusWithTone(`Bulk order updated (${direction}).`, "success");
+  };
+
+  const reorderByDrag = async (
+    route: "projects" | "technologies" | "experiences",
+    currentItems: Array<{ _id: string; displayOrder?: number }>,
+    draggedId: string,
+    targetId: string,
+  ) => {
+    const ordered = [...currentItems].sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+    const fromIndex = ordered.findIndex((item) => item._id === draggedId);
+    const toIndex = ordered.findIndex((item) => item._id === targetId);
+    if (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex) return;
+
+    const copy = [...ordered];
+    const [moved] = copy.splice(fromIndex, 1);
+    copy.splice(toIndex, 0, moved);
+
+    await Promise.all(
+      copy.map((item, index) =>
+        patchEntity(route, item._id, { displayOrder: index }),
+      ),
+    );
+    await refresh();
+    markSavedNow();
+    setStatusWithTone("Drag reorder applied.", "success");
   };
 
   const technologyCategories = useMemo(
@@ -265,7 +356,8 @@ export function AdminDashboard() {
 
   return (
     <div className="section-wrap space-y-6">
-      <DashboardHeaderCard onRefresh={() => void refresh()} />
+      <DashboardHeaderCard onRefresh={() => void refresh()} isRefreshing={isRefreshing} lastSavedAt={lastSavedAt} />
+      {status ? <InlineToast message={status} tone={statusTone} /> : null}
 
       <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
         <SidebarTabs tabItems={tabItems} activeTab={activeTab} onSelect={setActiveTab} />
@@ -283,7 +375,7 @@ export function AdminDashboard() {
               panelOpen={{ homeForm: panelOpen.homeForm, homeList: panelOpen.homeList }}
               onTogglePanel={(key) => togglePanel(key)}
               onSave={saveHomeContent}
-              setStatus={setStatusSafe}
+              setStatus={setStatusWithTone}
               isEditing={Boolean(homeContent?._id)}
             />
           ) : null}
@@ -306,7 +398,11 @@ export function AdminDashboard() {
               onSave={createProject}
               onDelete={(id) => deleteEntity("projects", id)}
               onUpdateOrder={updateProjectOrder}
-              setStatus={setStatusSafe}
+              onQuickUpdate={quickUpdateProject}
+              onBulkDelete={(ids) => bulkDelete("projects", ids)}
+              onBulkReorder={(ids, direction) => bulkReorder("projects", ids, filteredProjects, direction)}
+              onReorderByDrag={(draggedId: string, targetId: string) => reorderByDrag("projects", filteredProjects, draggedId, targetId)}
+              setStatus={setStatusWithTone}
               resetForm={() => setProjectForm(defaultProject)}
             />
           ) : null}
@@ -329,7 +425,11 @@ export function AdminDashboard() {
               onSave={createTechnology}
               onDelete={(id) => deleteEntity("technologies", id)}
               onUpdateOrder={updateTechnologyOrder}
-              setStatus={setStatusSafe}
+              onQuickUpdate={quickUpdateTechnology}
+              onBulkDelete={(ids) => bulkDelete("technologies", ids)}
+              onBulkReorder={(ids, direction) => bulkReorder("technologies", ids, filteredTechnologies, direction)}
+              onReorderByDrag={(draggedId: string, targetId: string) => reorderByDrag("technologies", filteredTechnologies, draggedId, targetId)}
+              setStatus={setStatusWithTone}
               resetForm={() => setTechnologyForm(defaultTechnology)}
             />
           ) : null}
@@ -352,7 +452,11 @@ export function AdminDashboard() {
               onSave={createExperience}
               onDelete={(id) => deleteEntity("experiences", id)}
               onUpdateOrder={updateExperienceOrder}
-              setStatus={setStatusSafe}
+              onQuickUpdate={quickUpdateExperience}
+              onBulkDelete={(ids) => bulkDelete("experiences", ids)}
+              onBulkReorder={(ids, direction) => bulkReorder("experiences", ids, filteredExperiences, direction)}
+              onReorderByDrag={(draggedId: string, targetId: string) => reorderByDrag("experiences", filteredExperiences, draggedId, targetId)}
+              setStatus={setStatusWithTone}
               resetForm={() => setExperienceForm(defaultExperience)}
             />
           ) : null}
@@ -361,6 +465,8 @@ export function AdminDashboard() {
             <SecurityTab
               adminToken={adminToken}
               setAdminToken={setAdminToken}
+              adminActor={adminActor}
+              setAdminActor={setAdminActor}
               status={status}
               panelOpen={{ security: panelOpen.security }}
               onTogglePanel={() => togglePanel("security")}

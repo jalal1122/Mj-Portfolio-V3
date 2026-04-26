@@ -10,6 +10,7 @@ const ProjectSchema = new mongoose.Schema(
     displayOrder: { type: Number, default: 0, min: 0 },
     githubLink: { type: String, default: "", trim: true },
     liveLink: { type: String, default: "", trim: true },
+    changedBy: { type: String, default: "Portfolio Admin", trim: true },
   },
   { timestamps: true },
 );

@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { MoveDown, MoveUp, Plus, Trash2, Upload } from "lucide-react";
-import type { Dispatch, SetStateAction } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import { ColorSwatches, CollapsibleSectionCard, SearchField } from "@/components/admin/dashboard/admin-ui";
 import type { CloudinaryResult, HomeContentEntity } from "@/components/admin/dashboard/types";
 
@@ -19,7 +19,7 @@ type HomeTabProps = {
   panelOpen: { homeForm: boolean; homeList: boolean };
   onTogglePanel: (key: "homeForm" | "homeList") => void;
   onSave: () => Promise<void>;
-  setStatus: (value: string) => void;
+  setStatus: (value: string, tone?: "success" | "error" | "info") => void;
   isEditing: boolean;
 };
 
@@ -45,6 +45,7 @@ export function HomeTab({
   setStatus,
   isEditing,
 }: HomeTabProps) {
+  const [saving, setSaving] = useState(false);
   const trustedCompanies = homeContentForm.trustedCompanies ?? [];
   const testimonials = homeContentForm.testimonials ?? [];
 
@@ -61,6 +62,18 @@ export function HomeTab({
         testimonial.role.toLowerCase().includes(reviewSearch.trim().toLowerCase()) ||
         testimonial.text.toLowerCase().includes(reviewSearch.trim().toLowerCase()),
     );
+
+  const runSave = async () => {
+    setSaving(true);
+    try {
+      await onSave();
+      setStatus(isEditing ? "Homepage content updated." : "Homepage content created.", "success");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Unable to save homepage content.", "error");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -89,20 +102,17 @@ export function HomeTab({
           </div>
         </div>
         <button
-          onClick={() =>
-            onSave()
-              .then(() => setStatus(isEditing ? "Homepage content updated." : "Homepage content created."))
-              .catch((error: unknown) => setStatus(error instanceof Error ? error.message : "Unable to save homepage content."))
-          }
-          className="inline-flex items-center gap-2 rounded-full bg-[var(--primary)] text-white px-4 py-2 text-sm"
+          onClick={() => void runSave()}
+          disabled={saving}
+          className="inline-flex items-center gap-2 rounded-full bg-[var(--primary)] text-white px-4 py-2 text-sm disabled:opacity-60"
         >
           <Plus className="h-4 w-4" />
-          Save Homepage Content
+          {saving ? "Saving..." : "Save Homepage Content"}
         </button>
       </CollapsibleSectionCard>
 
       <CollapsibleSectionCard title="Trusted Companies & Reviews" isOpen={panelOpen.homeList} onToggle={() => onTogglePanel("homeList")}>
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid lg:grid-cols-[1fr_1fr_320px] gap-4">
           <div className="space-y-3">
             <p className="text-sm font-medium">Trusted Companies</p>
             <SearchField value={trustedSearch} onChange={setTrustedSearch} placeholder="Search companies" />
@@ -283,6 +293,40 @@ export function HomeTab({
             >
               Add Review
             </button>
+          </div>
+
+          <div className="space-y-3 rounded-xl border border-[var(--card-border)] p-3 bg-[var(--glass-bg)]/50">
+            <p className="text-sm font-medium">Live Preview</p>
+            <div className="space-y-2">
+              <p className="text-xs uppercase tracking-[0.14em] text-[var(--text-secondary)]">Trusted strip</p>
+              <div className="flex flex-wrap gap-2">
+                {trustedCompanies.filter((item) => item.name.trim()).slice(0, 6).map((item) => (
+                  <span
+                    key={item.name}
+                    className="rounded-full border px-2.5 py-1 text-[11px]"
+                    style={{
+                      borderColor: item.color || "var(--card-border)",
+                      color: item.color || "var(--foreground)",
+                      background: item.color ? `color-mix(in srgb, ${item.color} 10%, transparent)` : "transparent",
+                    }}
+                  >
+                    {item.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-2">
+              <p className="text-xs uppercase tracking-[0.14em] text-[var(--text-secondary)]">Testimonials</p>
+              {testimonials.filter((item) => item.text.trim()).slice(0, 2).map((item, index) => (
+                <div key={`${item.name}-${index}`} className="rounded-lg border border-[var(--card-border)] p-2">
+                  <p className="text-xs text-[var(--text-secondary)] line-clamp-3">{item.text}</p>
+                  <p className="mt-1 text-[11px] font-semibold">{item.name}</p>
+                </div>
+              ))}
+              {!testimonials.some((item) => item.text.trim()) ? (
+                <p className="text-xs text-[var(--text-secondary)]">No testimonials yet - add one to preview card styling.</p>
+              ) : null}
+            </div>
           </div>
         </div>
       </CollapsibleSectionCard>

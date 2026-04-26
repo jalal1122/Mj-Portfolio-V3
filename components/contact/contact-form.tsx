@@ -2,7 +2,7 @@
 
 import { type FormEvent, useState } from "react";
 import { motion } from "framer-motion";
-import { Send, Mail, Clock3, MapPin } from "lucide-react";
+import { Send, Mail, Clock3, MapPin, Copy, Check } from "lucide-react";
 import { FaGithub, FaInstagram, FaLinkedinIn } from "react-icons/fa6";
 import { SpotlightCard } from "../ui/spotlight-card";
 
@@ -12,11 +12,38 @@ export function ContactForm() {
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
-  const socialLinks = [
-    { icon: FaLinkedinIn, label: "LinkedIn", href: "https://linkedin.com/in/" },
-    { icon: FaGithub, label: "GitHub", href: "https://github.com/" },
-    { icon: FaInstagram, label: "Instagram", href: "https://instagram.com/" },
+  const [copiedEmail, setCopiedEmail] = useState(false);
+  const [activeIntent, setActiveIntent] = useState<string | null>(null);
+  const intentTemplates = [
+    {
+      label: "Hire for project",
+      value: "hire-project",
+      template: "Hi Jalal, I want to hire you for a web project. Timeline, scope, and budget details:",
+    },
+    {
+      label: "Freelance",
+      value: "freelance",
+      template: "Hi Jalal, I have a freelance opportunity. Here are the requirements and expected timeline:",
+    },
+    {
+      label: "Internship",
+      value: "internship",
+      template: "Hi Jalal, I would like to discuss an internship role. Details about responsibilities and duration:",
+    },
+    {
+      label: "Collab",
+      value: "collab",
+      template: "Hi Jalal, I’m interested in collaborating on a product. Let’s discuss goals and execution plan:",
+    },
   ];
+  const socialLinks = [
+    { icon: FaLinkedinIn, label: "LinkedIn", href: "https://linkedin.com/in/mjdevstudio" },
+    { icon: FaGithub, label: "GitHub", href: "https://github.com/jalal1122" },
+    { icon: FaInstagram, label: "Instagram", href: "https://www.instagram.com/jalalkhan2084/?hl=en" },
+  ];
+
+  const emailIsValid = /\S+@\S+\.\S+/.test(email);
+  const nameLooksGood = name.trim().length >= 2;
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -45,7 +72,7 @@ export function ContactForm() {
   return (
     <div className="max-w-2xl w-full mx-auto">
       <motion.div className="text-center mb-10 sm:mb-16" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-        <h2 className="mb-4 text-3xl md:text-5xl font-semibold tracking-tight text-[var(--foreground)]">Let's Connect</h2>
+        <h2 className="mb-4 text-3xl md:text-5xl font-semibold tracking-tight text-[var(--foreground)]">Let&apos;s Connect</h2>
         <p className="text-base sm:text-xl sub-heading" style={{ color: "var(--text-secondary)" }}>
           Have a project in mind or want to collaborate? Drop me a message.
         </p>
@@ -96,6 +123,29 @@ export function ContactForm() {
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         />
         <form onSubmit={onSubmit} className="relative z-10 space-y-6">
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-[var(--foreground)]">Quick start your message</p>
+            <div className="flex flex-wrap gap-2">
+              {intentTemplates.map((intent) => (
+                <button
+                  key={intent.value}
+                  type="button"
+                  onClick={() => {
+                    setActiveIntent(intent.value);
+                    setMessage(intent.template);
+                  }}
+                  className={`rounded-full border px-3 py-1.5 text-xs transition-colors ${
+                    activeIntent === intent.value
+                      ? "border-[var(--primary)] text-[var(--primary)] bg-[color-mix(in_srgb,var(--primary)_12%,transparent)]"
+                      : "border-[var(--card-border)] text-[var(--text-secondary)]"
+                  }`}
+                >
+                  {intent.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div>
             <label htmlFor="name" className="block mb-2">
               Name
@@ -117,6 +167,7 @@ export function ContactForm() {
               placeholder="Your name"
               required
             />
+            {!nameLooksGood && name.length > 0 ? <p className="mt-1 text-xs text-amber-400">Please enter at least 2 characters.</p> : null}
           </div>
 
           <div>
@@ -140,6 +191,7 @@ export function ContactForm() {
               placeholder="your.email@example.com"
               required
             />
+            {!emailIsValid && email.length > 0 ? <p className="mt-1 text-xs text-amber-400">Please enter a valid email address.</p> : null}
           </div>
 
           <div>
@@ -163,6 +215,7 @@ export function ContactForm() {
               placeholder="Tell me about your project..."
               required
             />
+            <p className="mt-1 text-xs text-[var(--text-secondary)]">{message.trim().length} characters</p>
           </div>
 
           <div className="flex items-center gap-3 sm:gap-4">
@@ -193,6 +246,18 @@ export function ContactForm() {
 
           {status === "success" ? <p className="text-sm text-emerald-400">Message sent successfully.</p> : null}
           {status === "error" ? <p className="text-sm text-red-400">Failed to send. Please try again.</p> : null}
+          <button
+            type="button"
+            onClick={async () => {
+              await navigator.clipboard.writeText("jk4350649@gmail.com");
+              setCopiedEmail(true);
+              setTimeout(() => setCopiedEmail(false), 1800);
+            }}
+            className="inline-flex items-center gap-2 text-xs text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
+          >
+            {copiedEmail ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+            {copiedEmail ? "Email copied" : "Copy contact email"}
+          </button>
         </form>
       </motion.div>
       </SpotlightCard>

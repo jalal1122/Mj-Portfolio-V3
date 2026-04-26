@@ -12,6 +12,12 @@ type FeatureItem = {
   icon: LucideIcon;
 };
 
+type ResultItem = {
+  label: string;
+  value: string;
+  hint: string;
+};
+
 type TechBadge = {
   label: string;
   color?: string;
@@ -72,7 +78,7 @@ export function ProjectOverviewAndInnovations({ description, features }: Project
       viewport={{ once: true }}
       transition={{ duration: 0.8 }}
     >
-      <section>
+      <section id="overview">
         <h3 className="text-2xl font-semibold mb-6 text-[var(--foreground)]">Overview</h3>
         <p className="text-lg leading-relaxed" style={{ color: "var(--text-secondary)" }}>
           {description}
@@ -84,7 +90,7 @@ export function ProjectOverviewAndInnovations({ description, features }: Project
         </p>
       </section>
 
-      <section>
+      <section id="innovations">
         <h3 className="text-2xl font-semibold mb-6 text-[var(--foreground)]">Key Innovations</h3>
         <div className="grid sm:grid-cols-2 gap-6">
           {features.map((feature) => (
@@ -99,6 +105,68 @@ export function ProjectOverviewAndInnovations({ description, features }: Project
         </div>
       </section>
     </motion.div>
+  );
+}
+
+type ProjectResultsSectionProps = {
+  results: ResultItem[];
+};
+
+export function ProjectResultsSection({ results }: ProjectResultsSectionProps) {
+  return (
+    <section id="results">
+      <h3 className="text-2xl font-semibold mb-6 text-[var(--foreground)]">Results</h3>
+      <div className="grid sm:grid-cols-3 gap-4">
+        {results.map((result) => (
+          <SpotlightCard key={result.label} className="p-5 rounded-2xl">
+            <p className="text-xs uppercase tracking-[0.14em] text-[var(--text-secondary)]">{result.label}</p>
+            <p className="mt-2 text-2xl font-bold text-[var(--foreground)]">{result.value}</p>
+            <p className="mt-1 text-sm text-[var(--text-secondary)]">{result.hint}</p>
+          </SpotlightCard>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+type ProjectStoryModeProps = {
+  sections: { title: string; content: string }[];
+};
+
+export function ProjectStoryMode({ sections }: ProjectStoryModeProps) {
+  return (
+    <section id="story-mode">
+      <h3 className="text-2xl font-semibold mb-6 text-[var(--foreground)]">Story Mode</h3>
+      <div className="space-y-4">
+        {sections.map((section, index) => (
+          <SpotlightCard key={section.title} className="p-6 rounded-2xl">
+            <p className="text-xs uppercase tracking-[0.14em] text-[var(--text-secondary)]">
+              Step {index + 1}
+            </p>
+            <h4 className="mt-1 text-lg font-semibold text-[var(--foreground)]">{section.title}</h4>
+            <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)]">{section.content}</p>
+          </SpotlightCard>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+type ProjectTocProps = {
+  showStoryMode: boolean;
+};
+
+export function ProjectToc({ showStoryMode }: ProjectTocProps) {
+  return (
+    <SpotlightCard className="p-4 rounded-2xl lg:sticky lg:top-28">
+      <p className="text-xs uppercase tracking-[0.14em] text-[var(--text-secondary)] mb-2">On this page</p>
+      <div className="space-y-2 text-sm">
+        <a href="#overview" className="block hover:text-[var(--primary)] transition-colors">Overview</a>
+        <a href="#innovations" className="block hover:text-[var(--primary)] transition-colors">Key Innovations</a>
+        <a href="#results" className="block hover:text-[var(--primary)] transition-colors">Results</a>
+        {showStoryMode ? <a href="#story-mode" className="block hover:text-[var(--primary)] transition-colors">Story Mode</a> : null}
+      </div>
+    </SpotlightCard>
   );
 }
 

@@ -12,3 +12,8 @@ export function isMutationAllowed(request: Request) {
   const suppliedToken = request.headers.get("x-admin-token");
   return suppliedToken === requiredToken;
 }
+
+export function getMutationActor(request: Request) {
+  const actor = request.headers.get("x-admin-user")?.trim();
+  return actor || "Portfolio Admin";
+}

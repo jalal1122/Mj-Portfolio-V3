@@ -1,5 +1,9 @@
+"use client";
+
 import Link from "next/link";
-import { Mail } from "lucide-react";
+import { Mail, Copy, Check } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { FaGithub, FaInstagram, FaLinkedinIn } from "react-icons/fa6";
 
 const footerLinks = [
@@ -16,30 +20,56 @@ const socialLinks = [
 ];
 
 export function FooterProfileSection() {
+  const [copied, setCopied] = useState(false);
+
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Muhammad Jalal</h3>
       <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
         Junior MERN Stack Developer crafting modern, scalable, and user-focused digital products.
       </p>
-      <Link
-        href="mailto:hello@example.com"
-        className="inline-flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
-      >
-        <Mail size={14} />
-        jk4350649@gmail.com
-      </Link>
+      <div className="flex flex-wrap items-center gap-3">
+        <Link
+          href="mailto:jk4350649@gmail.com"
+          className="inline-flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
+        >
+          <Mail size={14} />
+          jk4350649@gmail.com
+        </Link>
+        <button
+          type="button"
+          onClick={async () => {
+            await navigator.clipboard.writeText("jk4350649@gmail.com");
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1800);
+          }}
+          className="inline-flex items-center gap-1.5 rounded-full border border-[var(--card-border)] px-2.5 py-1 text-xs text-[var(--text-secondary)] hover:text-[var(--primary)] hover:border-[var(--primary)] transition-colors"
+        >
+          {copied ? <Check size={12} /> : <Copy size={12} />}
+          {copied ? "Copied" : "Copy email"}
+        </button>
+      </div>
     </div>
   );
 }
 
 export function FooterExploreSection() {
+  const pathname = usePathname();
+
   return (
     <div>
       <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--primary)]">Explore</p>
       <div className="mt-3 space-y-2 text-sm">
         {footerLinks.map((link) => (
-          <Link key={link.href} href={link.href} className="block text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors">
+          <Link
+            key={link.href}
+            href={link.href}
+            className={`block transition-colors ${
+              pathname === link.href
+                ? "text-[var(--primary)]"
+                : "text-[var(--text-secondary)] hover:text-[var(--primary)]"
+            }`}
+          >
             {link.label}
           </Link>
         ))}

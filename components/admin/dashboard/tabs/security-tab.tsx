@@ -6,12 +6,14 @@ import { CollapsibleSectionCard } from "@/components/admin/dashboard/admin-ui";
 type SecurityTabProps = {
   adminToken: string;
   setAdminToken: Dispatch<SetStateAction<string>>;
+  adminActor: string;
+  setAdminActor: Dispatch<SetStateAction<string>>;
   status: string;
   panelOpen: { security: boolean };
   onTogglePanel: () => void;
 };
 
-export function SecurityTab({ adminToken, setAdminToken, status, panelOpen, onTogglePanel }: SecurityTabProps) {
+export function SecurityTab({ adminToken, setAdminToken, adminActor, setAdminActor, status, panelOpen, onTogglePanel }: SecurityTabProps) {
   return (
     <CollapsibleSectionCard title="Security & Status" isOpen={panelOpen.security} onToggle={onTogglePanel}>
       <p className="text-sm text-[var(--text-secondary)]">Admin mutation token (required only when `ADMIN_TOKEN` is enabled)</p>
@@ -19,6 +21,13 @@ export function SecurityTab({ adminToken, setAdminToken, status, panelOpen, onTo
         value={adminToken}
         onChange={(event) => setAdminToken(event.target.value)}
         placeholder="Paste admin token"
+        className="w-full rounded-xl border border-[var(--card-border)] bg-transparent px-4 py-2"
+      />
+      <p className="text-sm text-[var(--text-secondary)]">Mutation actor name (stored as `changedBy` on content updates)</p>
+      <input
+        value={adminActor}
+        onChange={(event) => setAdminActor(event.target.value)}
+        placeholder="Portfolio Admin"
         className="w-full rounded-xl border border-[var(--card-border)] bg-transparent px-4 py-2"
       />
       {status ? <p className="text-sm text-[var(--text-secondary)]">{status}</p> : <p className="text-sm text-[var(--text-secondary)]">No recent actions.</p>}

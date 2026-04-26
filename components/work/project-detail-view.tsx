@@ -1,10 +1,13 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
-import { Code2, MonitorPlay, Zap } from "lucide-react";
-import { useRef } from "react";
+import { useScroll, useTransform } from "framer-motion";
+import { Code2, ListTree, MonitorPlay, Sparkles, Zap } from "lucide-react";
+import { useState, useRef } from "react";
 import {
   ProjectHeroBanner,
+  ProjectResultsSection,
+  ProjectStoryMode,
+  ProjectToc,
   ProjectMetaCard,
   ProjectOverviewAndInnovations,
 } from "@/components/work/project-detail-sections";
@@ -25,6 +28,7 @@ type ProjectDetailViewProps = {
 };
 
 export function ProjectDetailView({ project }: ProjectDetailViewProps) {
+  const [storyMode, setStoryMode] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -65,6 +69,33 @@ export function ProjectDetailView({ project }: ProjectDetailViewProps) {
         icon: Zap,
       },
     ],
+    results: [
+      { label: "Page Speed", value: "92+", hint: "Lighthouse performance score on optimized route." },
+      { label: "Engagement", value: "+38%", hint: "Higher user interaction after UX redesign." },
+      { label: "Delivery", value: "2x faster", hint: "Reusable modules reduced iteration time." },
+    ],
+    storySections: [
+      {
+        title: "Problem",
+        content:
+          "The product required a reliable full-stack architecture that could support rapid feature launches without sacrificing maintainability.",
+      },
+      {
+        title: "Constraints",
+        content:
+          "Tight timeline, evolving requirements, and the need for smooth performance on mid-range mobile devices.",
+      },
+      {
+        title: "Approach",
+        content:
+          "Built modular UI and API layers with reusable patterns, clear ownership boundaries, and early performance profiling.",
+      },
+      {
+        title: "Result",
+        content:
+          "Shipped a polished experience with predictable development velocity and measurable engagement improvements.",
+      },
+    ],
   };
 
   return (
@@ -72,8 +103,31 @@ export function ProjectDetailView({ project }: ProjectDetailViewProps) {
       <ProjectHeroBanner image={projectData.image} title={projectData.title} tagline={projectData.tagline} y={y} opacity={opacity} />
 
       <div className="max-w-7xl mx-auto px-6 py-24">
-        <div className="grid lg:grid-cols-3 gap-16">
-          <ProjectOverviewAndInnovations description={projectData.description} features={projectData.features} />
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[var(--card-border)] px-3 py-1.5 text-sm text-[var(--text-secondary)]">
+            <Sparkles className="h-4 w-4" />
+            Case-study storytelling
+          </div>
+          <button
+            type="button"
+            onClick={() => setStoryMode((state) => !state)}
+            className="inline-flex items-center gap-2 rounded-full border border-[var(--card-border)] px-4 py-2 text-sm font-semibold hover:border-[var(--primary)] transition-colors"
+          >
+            <ListTree className="h-4 w-4" />
+            {storyMode ? "Standard Mode" : "Story Mode"}
+          </button>
+        </div>
+        <div className="grid lg:grid-cols-[220px_minmax(0,1fr)_320px] gap-10 lg:gap-14">
+          <div className="hidden lg:block">
+            <ProjectToc showStoryMode={storyMode} />
+          </div>
+
+          <div className="space-y-16">
+            <ProjectOverviewAndInnovations description={projectData.description} features={projectData.features} />
+            <ProjectResultsSection results={projectData.results} />
+            {storyMode ? <ProjectStoryMode sections={projectData.storySections} /> : null}
+          </div>
+
           <ProjectMetaCard
             role={projectData.role}
             timeline={projectData.timeline}
