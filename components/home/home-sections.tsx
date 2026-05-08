@@ -123,8 +123,6 @@ type CoreTechnologiesSectionProps = {
 };
 
 export function CoreTechnologiesSection({ techStack }: CoreTechnologiesSectionProps) {
-  const reduceMotion = useReducedMotion();
-
   return (
     <section id="metrics" className="py-24 px-6">
       <div className="max-w-7xl mx-auto">
@@ -137,8 +135,8 @@ export function CoreTechnologiesSection({ techStack }: CoreTechnologiesSectionPr
                 <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[var(--glass-bg)] to-transparent z-10 pointer-events-none" />
                 <motion.div
                   className="flex gap-4 w-max"
-                  animate={reduceMotion ? undefined : { x: ["0%", "-50%"] }}
-                  transition={reduceMotion ? undefined : { duration: 30, repeat: Infinity, ease: "linear" }}
+                  animate={{ x: ["0%", "-50%"] }}
+                  transition={{ duration: 42, repeat: Infinity, ease: "linear" }}
                 >
                   {[...techStack].map((tech, idx) => (
                     <div
@@ -158,8 +156,8 @@ export function CoreTechnologiesSection({ techStack }: CoreTechnologiesSectionPr
                 </motion.div>
                 <motion.div
                   className="flex gap-4 w-max"
-                  animate={reduceMotion ? undefined : { x: ["-50%", "0%"] }}
-                  transition={reduceMotion ? undefined : { duration: 25, repeat: Infinity, ease: "linear" }}
+                  animate={{ x: ["-50%", "0%"] }}
+                  transition={{ duration: 38, repeat: Infinity, ease: "linear" }}
                 >
                   {[...techStack].reverse().concat([...techStack].reverse()).map((tech, idx) => (
                     <div
@@ -274,8 +272,8 @@ export function TrustedCompaniesSection({ trustLoop, trustLoopForward, trustLoop
           <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[var(--background)] to-transparent z-10 pointer-events-none" />
           <motion.div
             className="flex gap-8 items-center w-max"
-            animate={reduceMotion ? undefined : { x: ["0%", "-50%"] }}
-            transition={reduceMotion ? undefined : { duration: 25, repeat: Infinity, ease: "linear" }}
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{ duration: 34, repeat: Infinity, ease: "linear" }}
           >
             {trustLoop.map((company, index) => {
               const Icon = company.icon;
@@ -297,8 +295,8 @@ export function TrustedCompaniesSection({ trustLoop, trustLoopForward, trustLoop
 
           <motion.div
             className="flex gap-3 sm:gap-4 items-center w-max"
-            animate={reduceMotion ? undefined : { x: ["0%", "-50%"] }}
-            transition={reduceMotion ? undefined : { duration: 18, repeat: Infinity, ease: "linear" }}
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{ duration: 26, repeat: Infinity, ease: "linear" }}
           >
             {trustLoopForward.map((company, index) => {
               const Icon = company.icon;
@@ -315,8 +313,8 @@ export function TrustedCompaniesSection({ trustLoop, trustLoopForward, trustLoop
 
           <motion.div
             className="flex gap-3 sm:gap-4 items-center w-max"
-            animate={reduceMotion ? undefined : { x: ["-50%", "0%"] }}
-            transition={reduceMotion ? undefined : { duration: 17, repeat: Infinity, ease: "linear" }}
+            animate={{ x: ["-50%", "0%"] }}
+            transition={{ duration: 24, repeat: Infinity, ease: "linear" }}
           >
             {trustLoopReverse.map((company, index) => {
               const Icon = company.icon;

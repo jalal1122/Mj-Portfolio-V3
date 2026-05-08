@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 
 type TechMarqueeProps = {
   items: string[];
@@ -8,7 +8,6 @@ type TechMarqueeProps = {
 };
 
 export function TechMarquee({ items, reverse = false }: TechMarqueeProps) {
-  const reduceMotion = useReducedMotion();
   const row = [...items, ...items];
   const targetX = reverse ? ["-50%", "0%"] : ["0%", "-50%"];
 
@@ -16,8 +15,8 @@ export function TechMarquee({ items, reverse = false }: TechMarqueeProps) {
     <div className="overflow-hidden">
       <motion.div
         className="flex gap-3 w-max"
-        animate={reduceMotion ? undefined : { x: targetX }}
-        transition={reduceMotion ? undefined : { duration: 16, ease: "linear", repeat: Infinity }}
+        animate={{ x: targetX }}
+        transition={{ duration: 24, ease: "linear", repeat: Infinity }}
       >
         {row.map((item, idx) => (
           <span
